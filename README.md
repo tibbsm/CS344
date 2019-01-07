@@ -1,6 +1,5 @@
 # CS344 - Operating Systems I - Winter 2019
 
-
 ### Subject Matter
 
 In this course we will be learning about scripting and how it connects user programs and OS utilities together, communicating with the Operating System via system calls and utilities, creating and managing multiple processes at once, and inter-process communication, including networking. 
@@ -18,3 +17,8 @@ Write a program that uses sockets to implement a client/server system.
 Explain how a common file system works, including structure, I/O operations, and security.
 Describe the memory organization of a typical process in a common operating system.
 You will be using UNIX and C extensively in this course, though C will be reviewed; I expect that you have some experience programming, compiling, and using C and its libraries.
+
+
+### Optional Reading
+William E. Shotts, Jr., The Linux Command Line, LinuxCommand.org (free download!)
+Michael Kerrisk, The Linux Programming Interface (TLPI), No Starch Press, 2010, ISBN: 978-1-59327-220-3
