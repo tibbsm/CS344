@@ -1,0 +1,39 @@
+#!/bin/bash
+
+## Check the right number and format of arguments.
+
+# matrix dims [MATRIX]
+# dims should print the dimensions of the matrix as the number of rows, followed by a space, then the number of columns.
+# $ cat m1
+# 1	2	3	4
+# 5	6	7	8
+# $ ./matrix dims m1
+# 2 4
+
+# Initialize the row counts
+row=0
+col=0
+
+read -r firstline<$1
+for i in $firstline
+do 
+	((col++))
+done
+
+while read myLine
+do
+	((row++))	
+done < $1
+echo $row $col
+
+# matrix transpose [MATRIX]
+# transpose should reflect the elements of the matrix along the main diagonal. Thus, an MxN matrix will become an NxM matrix and the values along the main diagonal will remain unchanged.
+
+# matrix mean [MATRIX]
+# mean should take an MxN matrix and return an 1xN row vector, where the first element is the mean of column one, the second element is the mean of column two, and so on.
+
+# matrix add MATRIX_LEFT MATRIX_RIGHT
+# add should take two MxN matrices and add them together element-wise to produce an MxN matrix. add should return an error if the matrices do not have the same dimensions.
+
+# matrix multiply MATRIX_LEFT MATRIX_RIGHT   
+# multiply should take an MxN and NxP matrix and produce an MxP matrix. Note that, unlike addition, matrix multiplication is not commutative. That is A*B != B*A.
