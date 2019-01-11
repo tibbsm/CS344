@@ -14,8 +14,6 @@
 row=0
 col=0
 
-
-# TODO put for loop in while loop and run just once??
 read -r firstline<$1
 for i in $firstline
 do 
