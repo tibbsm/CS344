@@ -1,0 +1,6 @@
+#!/bin/bash
+oneline="1 2 3 4 5"
+for i in $oneline
+do 
+	echo "i is: $i"
+done

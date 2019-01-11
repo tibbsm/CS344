@@ -1,0 +1,5 @@
+#!/bin/bash
+while read mLine
+do 
+	echo "$mLine"
+done < $1
