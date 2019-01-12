@@ -14,7 +14,7 @@
 row=0
 col=0
 
-read -r firstline<$1
+read firstline < $1
 for i in $firstline
 do 
 	((col++))

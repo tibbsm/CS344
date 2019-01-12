@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# matrix dims [MATRIX]
+# dims should print the dimensions of the matrix as the number of rows, followed by a space, then the number of columns.
+# $ cat m1
+# 1     2       3       4
+# 5     6       7       8
+# $ ./matrix dims m1
+# 2 4
+
+# Initialize the row counts
+row=0
+col=0
+
+read firstline < $1
+for i in $firstline
+do
+        ((col++))
+done
+
+while read myLine
+do
+        ((row++))
+done < $1
+echo $row $col
