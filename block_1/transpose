@@ -1,28 +1,19 @@
 #!/bin/bash
 
-# matrix transpose [MATRIX]
-# transpose should reflect the elements of the matrix along the main diagonal. Thus, an MxN matrix will become an NxM matrix and the values along the main diagonal will remain unchanged.
-
-# This script converts row file ./tempinputfile into a column file ./tempcolfile
-# then back into a row file ./temprowfile<PID>
-inputFile="tempinputfile"
-tempCol="tempcolfile"
-tempRow="temprowfile"
-
-
+tempFile="tempfile"
 
 # Make the input row file
-echo -e "1\t2\t3\t4\t5" > $inputFile
+numOfLines=$(wc -l < $1)
+totalNum=$(wc -w < $1)
+numOfRows=$(( totalNum / numOfLines ))
+index=1
+j=1
 
-# Append each number onto the end of a temporary column file by cutting specific columns
-cut -c 1 $inputFile > $tempCol
-cut -c 3 $inputFile >> $tempCol
-cut -c 5 $inputFile >> $tempCol
-cut -c 7 $inputFile >> $tempCol
-cut -c 9 $inputFile >> $tempCol
+cat $1 | paste -s -d '\t' $1 > $tempFile
 
-# Convert the column file back into a row file
-cat $tempCol | tr '\n' '\t' > "$tempRow$$"
+read -r string< $tempFile
 
-# Add a newline char to the end of the row file, for easier printing
-echo >> "$tempRow$$"
+
+cat $tempFile
+rm $tempFile
+

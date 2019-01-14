@@ -4,6 +4,27 @@
 # FUNCTIONS		#
 #########################
 
+function checkArguments() {
+	printf "\ncheckIfOneArgument() function START\n"
+	printf "Number of Argument %d\n" $#
+	
+ 	if [[ $# != 2 ]]
+	then 
+		printf "\nERROR: You entered %d arguments instead of 1 for '%s' operation.\n" $(($#-1)) $1 
+		exit 1
+	fi	
+
+	printf "\ncheckIfOneArgument() function END\n"
+}
+
+function checkFiles() {
+	if [[ ! -r $1 && ! -w $1 ]]
+        then
+		printf "ERROR: %s file is not readable." $1
+		exit 1
+        fi
+}
+
 # Check the right number and format of arguments.
 
 # dims should print the dimensions of the matrix as the number of rows, followed by a space, then the number of columns.
@@ -16,6 +37,9 @@
 function getDimensions() {
 	echo; echo "getDimensions() function START"
 	echo "Inputs : $@"
+
+	checkArguments $@
+	checkFiles $2
 
 	echo "Matrix: $2"
 	cat "$2"
@@ -38,6 +62,7 @@ function getDimensions() {
 
 	# Print out the dimensions of the matrix [row] [col]
 	echo $row $col
+	echo "getDimensions() function END"
 }
 
 # matrix transpose [MATRIX]
@@ -45,6 +70,8 @@ function getDimensions() {
 function transposeMatrix() {
 	echo; echo "transposeMatrix() function START"
 	echo "Inputs : $@"
+
+	
 }
 
 
@@ -114,6 +141,6 @@ function main() {
 
 # Call `_main` after everything has been defined.
 main "$@"
-echo
+echo "main() function END"
 echo "=========="
 

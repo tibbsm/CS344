@@ -1,0 +1,20 @@
+#!/bin/bash
+function checkIfOneArgument() {
+	if [[ $# > 2 ]]
+	then 
+		echo "FALSE"
+	else
+		echo "OK"
+	fi
+}
+
+function checkFileReadability() {
+	if [[ ! -r $1 && ! -w $1 ]]
+	then
+		echo "FILE IS NOT READABLE?!?!?!?"
+	fi
+}
+
+checkIfOneArgument $@
+
+checkFileReadability $1
