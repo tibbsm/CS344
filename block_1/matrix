@@ -1,8 +1,11 @@
 #!/bin/bash
 
-## Check the right number and format of arguments.
+#########################
+# FUNCTIONS		#
+#########################
 
-# matrix dims [MATRIX]
+# Check the right number and format of arguments.
+
 # dims should print the dimensions of the matrix as the number of rows, followed by a space, then the number of columns.
 # $ cat m1
 # 1	2	3	4
@@ -10,30 +13,107 @@
 # $ ./matrix dims m1
 # 2 4
 
-# Initialize the row counts
-row=0
-col=0
+function getDimensions() {
+	echo; echo "getDimensions() function START"
+	echo "Inputs : $@"
 
-read firstline < $1
-for i in $firstline
-do 
-	((col++))
-done
+	echo "Matrix: $2"
+	cat "$2"
+	echo
+	
+	# Initialize the row count
+	row=0
 
-while read myLine
-do
-	((row++))	
-done < $1
-echo $row $col
+	# Count each line in the file (rows)
+	while read myLine
+	do
+        	((row++))
+	done < "$2"
+
+	# Initialize columns variable to the total number of 
+	col=$(wc -w < $2)
+
+	# Divide the total items by the number of rows to get the number of columns
+	col=$((col / row))
+
+	# Print out the dimensions of the matrix [row] [col]
+	echo $row $col
+}
 
 # matrix transpose [MATRIX]
 # transpose should reflect the elements of the matrix along the main diagonal. Thus, an MxN matrix will become an NxM matrix and the values along the main diagonal will remain unchanged.
+function transposeMatrix() {
+	echo; echo "transposeMatrix() function START"
+	echo "Inputs : $@"
+}
+
 
 # matrix mean [MATRIX]
 # mean should take an MxN matrix and return an 1xN row vector, where the first element is the mean of column one, the second element is the mean of column two, and so on.
+function getMean() {
+	echo; echo "getMean() function START"
+	echo "Inputs : $@"
+}
 
 # matrix add MATRIX_LEFT MATRIX_RIGHT
 # add should take two MxN matrices and add them together element-wise to produce an MxN matrix. add should return an error if the matrices do not have the same dimensions.
+function addMatrices() {
+	echo; echo "addMatrices() function START"
+	echo "Inputs : $@"
+}
+
 
 # matrix multiply MATRIX_LEFT MATRIX_RIGHT   
 # multiply should take an MxN and NxP matrix and produce an MxP matrix. Note that, unlike addition, matrix multiplication is not commutative. That is A*B != B*A.
+function multiplyMatrices() {
+	echo; echo "multiplyMatrices() function START"
+	echo "Inputs : $@"
+}
+
+####################
+# Main
+####################
+# main()
+#
+# Usage:
+# 	main [<options>] [<arguments>]
+#
+# Description:
+#   	Entry point for the program, handling basic option parsing and dispatching.
+function main() {
+	echo "main() function START"	
+	
+	echo "Inputs: $@"
+
+	case "$1" in 
+		"dims")
+			echo "Operation == dims"
+			getDimensions "$@"
+			;;
+		"transpose")
+			echo "Operation == tranpose"
+			transposeMatrix "$@"
+			;;
+		"mean")
+			echo "Operation == mean"
+			getMean "$@"
+			;;
+		"add")
+			echo "Operation == add"
+			addMatrices "$@"
+			;;
+		"multiply")
+			echo "Operation == multiply"
+			multiplyMatrices "$@"
+			;;
+		*)
+			echo "OPERATION UNKNOWN!!!"
+			;;
+	esac
+}
+
+# Call `_main` after everything has been defined.
+main "$@"
+echo
+echo "=========="
+

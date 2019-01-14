@@ -1,0 +1,12 @@
+#!/bin/bash
+
+echo "Testing dims"
+bash matrix dims m1
+echo
+
+bash matrix transpose 
+bash matrix mean
+bash matrix add
+bash matrix multiply
+
+bash matrix aljasdljfhlasjh

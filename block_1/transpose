@@ -9,6 +9,8 @@ inputFile="tempinputfile"
 tempCol="tempcolfile"
 tempRow="temprowfile"
 
+
+
 # Make the input row file
 echo -e "1\t2\t3\t4\t5" > $inputFile
 

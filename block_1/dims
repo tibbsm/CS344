@@ -8,11 +8,20 @@
 # $ ./matrix dims m1
 # 2 4
 
+SRC="${0%/*}"
+i1=$1
+i2=$2
+
+function dimens() {
+
+echo; echo "Start of dimens function"
+echo "Inputs: " $i1 $i2
+
 # Initialize the row counts
 row=0
 col=0
 
-read firstline < $1
+read firstline < $i2
 for i in $firstline
 do
         ((col++))
@@ -21,5 +30,18 @@ done
 while read myLine
 do
         ((row++))
-done < $1
+done < "$i2"
 echo $row $col
+}
+
+echo
+echo "Input \$1: $1"
+echo "Input \$2: $2"
+
+if [[ $1 == "dims" ]]
+then
+	echo
+	echo "Input 1 == dimens"
+	echo "Launching dimens() function"
+	dimens
+fi
