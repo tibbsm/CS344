@@ -303,7 +303,7 @@ function multiplyMatrices() {
 		while read myLine2
 		do
 			sum=0
-			for ((index2=1; index2 <= $numOfRows2; index2++))
+			for ((index2=1; index2 <= $numOfCols2; index2++))
 			do
 				num1=$(echo $myLine1 | cut -d " " -f $index2)
 				num2=$(echo $myLine2 | cut -d " " -f $index2)
