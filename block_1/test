@@ -1,12 +1,12 @@
-#!/bin/bash
+2	4	6	8	10
+1	3	5	7	9
 
-echo "Testing dims"
-bash matrix dims m1
-echo
 
-bash matrix transpose 
-bash matrix mean
-bash matrix add
-bash matrix multiply
 
-bash matrix aljasdljfhlasjh
+2	4	6	8	10
+1	3	5	7	9
+
+
+
+2	4	6	8	10	2	4	6	8	10
+1	3	5	7	9	1	3	5	7	9

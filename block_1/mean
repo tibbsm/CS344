@@ -1,14 +1,37 @@
 #!/bin/bash
 
-sum=0
+tempFile="tempfile"
 
-cat $1 | paste -s -d '\t' $1 > tempFile
+# Make the input row file
+numOfRows=$(wc -l < $1)
+numOfItems=$(wc -w < $1)
+numOfCols=$(( numOfItems / numOfRows ))
 
-read -r string < tempFile
 
-for i in $string 
+colIndex=1
+
+while [[ $colIndex -le $numOfCols ]]
 do 
-	echo "Adding " $i
-	sum=$(( sum + i ))
-	echo "Sum: " $sum
-done 
+	sum=0
+	while read myLine
+	do
+		num=$(echo $myLine | cut -d " " -f $colIndex)
+		sum=$(( sum + num )) 
+	done < $1
+
+	(( mean= ($sum + ($numOfRows / 2) *(($sum > 0) * 2 - 1)) / $numOfRows ))
+
+	echo -n $mean >> $tempFile
+
+	if [[ $colIndex -lt $numOfCols ]]
+	then
+		echo -n -e '\t' >> $tempFile 
+	else
+		echo >> $tempFile
+	fi
+
+	(( colIndex++ ))	
+done
+
+cat $tempFile
+rm $tempFile

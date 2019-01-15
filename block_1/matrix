@@ -1,50 +1,93 @@
 #!/bin/bash
 
-#########################
-# FUNCTIONS		#
-#########################
-
 function checkArguments() {
-	printf "\ncheckIfOneArgument() function START\n"
-	printf "Number of Argument %d\n" $#
 	
- 	if [[ $# != 2 ]]
-	then 
-		printf "\nERROR: You entered %d arguments instead of 1 for '%s' operation.\n" $(($#-1)) $1 
-		exit 1
-	fi	
-
-	printf "\ncheckIfOneArgument() function END\n"
+	case "$1" in
+                "dims" | "transpose" | "mean")
+ 			if [[ $# > 2 ]]
+			then 
+				>&2 echo "ERROR: You entered too many arguments ($(($#-1))) for the $1 operation."
+				exit 1
+			fi	
+                        ;;
+		"add" | "multiply")	
+			if [[ $# != 3 ]]
+			then 	
+				>&2 echo "ERROR: You entered $(($#-1)) arguments instead of 2 for the $1 operation."
+				exit 1
+			fi
+			;;
+	esac
 }
 
 function checkFiles() {
-	if [[ ! -r $1 && ! -w $1 ]]
-        then
-		printf "ERROR: %s file is not readable." $1
-		exit 1
-        fi
+
+	case "$1" in 
+		"dims" | "transpose" | "mean")
+			if [[ $# > 1 && ! -r $2  ]] 
+       			then
+				>&2 echo "ERROR: $2 file is not readable."
+				exit 1
+       			fi
+			;;
+		"add" | "multiply")
+			if [[ ! -r $2  ]]  
+       			then
+				>&2 echo "ERROR: $2 file is not readable."
+				exit 1
+			elif [[ ! -r $3 ]]
+			then
+				>&2 echo "ERROR: $3 file is not readable."
+				exit 1
+       			fi
+			;;
+	esac
 }
 
-# Check the right number and format of arguments.
+function checkMatrixDimensions() {
+	# Matrix dimension variables
+        numOfRows1=$(wc -l < $2)
+        numOfItems1=$(wc -w < $2)
+        numOfCols1=$(( numOfItems1 / numOfRows1 ))
 
+        numOfRows2=$(wc -l < $3)
+        numOfItems2=$(wc -w < $3)
+        numOfCols2=$(( numOfItems2 / numOfRows2 ))
+
+
+	if [[ $1 == "add" ]] 
+	then 
+		if [[ $numOfRows1 -ne $numOfRows2 ]] || [[ $numOfCols1 -ne $numOfCols2 ]]
+		then			
+			>&2 echo "Error: You cannot use the add function on matrices of different sizes."
+			exit 1
+		fi	
+	elif [[ $1 == "multiply" ]]
+	then
+# In order for matrix multiplication to be defined, the number of columns in the first matrix must be equal to the number of rows in the second matrix.
+		if [[ $numOfCols1 != $numOfRows2 ]]
+		then 
+			>&2 echo "Error: You cannot multiply these matrices."
+		fi
+	fi	
+}
+
+
+# matrix dims [MATRIX]
 # dims should print the dimensions of the matrix as the number of rows, followed by a space, then the number of columns.
-# $ cat m1
-# 1	2	3	4
-# 5	6	7	8
-# $ ./matrix dims m1
-# 2 4
 
 function getDimensions() {
-	echo; echo "getDimensions() function START"
-	echo "Inputs : $@"
 
-	checkArguments $@
-	checkFiles $2
+	matrixFile="tempMatrixFile$$"
 
-	echo "Matrix: $2"
-	cat "$2"
-	echo
-	
+	if [[ $# > 1 ]]
+	then 
+		cat $2 > "$matrixFile"
+	else 
+		cat > "$matrixFile"
+	fi
+		
+
 	# Initialize the row count
 	row=0
 
@@ -52,34 +95,135 @@ function getDimensions() {
 	while read myLine
 	do
         	((row++))
-	done < "$2"
+	done < $matrixFile
 
-	# Initialize columns variable to the total number of 
-	col=$(wc -w < $2)
+	# Initialize columns variable to the total number of items in the matrix 
+	col=$(wc -w < $matrixFile)
 
 	# Divide the total items by the number of rows to get the number of columns
 	col=$((col / row))
 
 	# Print out the dimensions of the matrix [row] [col]
 	echo $row $col
-	echo "getDimensions() function END"
+
+	rm $matrixFile
 }
 
 # matrix transpose [MATRIX]
-# transpose should reflect the elements of the matrix along the main diagonal. Thus, an MxN matrix will become an NxM matrix and the values along the main diagonal will remain unchanged.
+# transpose should reflect the elements of the matrix along the main diagonal.
+# Thus, an MxN matrix will become an NxM matrix and the values along the main diagonal will remain unchanged.
 function transposeMatrix() {
-	echo; echo "transposeMatrix() function START"
-	echo "Inputs : $@"
 
+	matrixFile="tempMatrixFile$$"
+
+        if [[ $# > 1 ]]
+        then
+                cat $2 > "$matrixFile"
+        else
+                cat > "$matrixFile"
+        fi
+
+	# Temporary file to build and store transposed matrix. Will not be saved.
+	tempFile="transposeMatrixTempFile$$"
+
+	# Matrix dimension variables
+	numOfRows=$(wc -l < $matrixFile)
+	numOfItems=$(wc -w < $matrixFile)
+	numOfCols=$(( numOfItems / numOfRows ))
+
+	# This variable keeps track of which column the function is currently transposing
+	colIndex=1
+
+	# For each column in the original matrix
+	while [[ $colIndex -le $numOfCols ]]
+	do
+		# This variable keeps track of which row the function is working on
+		rowIndex=1
+
+		# For each row in the original matrix
+		while read myLine
+		do
+			# If not the last row, append number at colIndex followed by a tab
+			if [[ $rowIndex -lt $numOfRows ]]
+			then
+				echo $myLine | cut -d " " -f $colIndex | tr '\n' '\t' >> $tempFile
+				(( rowIndex++ ))
+			# If last row, append number followed by a new line
+			else
+				echo $myLine | cut -d " " -f $colIndex >> $tempFile
+			fi
+		done < $matrixFile
 	
+		# Increment index to transpose the next column	
+		(( colIndex++ ))
+	done
+
+	# Display the transposed matrix & delete the temp file
+	cat $tempFile
+	rm $tempFile $matrixFile
 }
 
 
 # matrix mean [MATRIX]
 # mean should take an MxN matrix and return an 1xN row vector, where the first element is the mean of column one, the second element is the mean of column two, and so on.
 function getMean() {
-	echo; echo "getMean() function START"
-	echo "Inputs : $@"
+
+	matrixFile="tempMatrixFile$$"
+
+        if [[ $# > 1 ]]
+        then
+                cat $2 > "$matrixFile"
+        else
+                cat > "$matrixFile"
+        fi
+
+	# Temporary file to hold column means
+	tempFile="meanTempFile$$"	
+
+	# Matrix dimension variables
+	numOfRows=$(wc -l < $matrixFile)
+	numOfItems=$(wc -w < $matrixFile)
+	numOfCols=$(( numOfItems / numOfRows ))
+
+	# Column index to track which column's mean the function is calculating
+	colIndex=1
+
+	# For each column...
+	while [[ $colIndex -le $numOfCols ]]
+	do
+		# Initialize column's sum variable	
+		sum=0
+
+		# For every row/number in a column...
+		while read myLine
+		do
+			# Get the number from the column & add it to the sum			
+			num=$(echo $myLine | cut -d " " -f $colIndex)
+			sum=$(( sum + num ))
+		done < $matrixFile
+
+		# Calculate the mean and round to the nearest integer
+		(( mean= ($sum + ($numOfRows /2) * (($sum > 0) * 2 - 1)) / $numOfRows ))
+		
+		# Copy columns mean to the temp file
+		echo -n $mean >> $tempFile
+
+		# If row isn't last row, append a tab to the file
+		if [[ $colIndex -lt $numOfCols ]]
+		then
+			echo -n -e '\t' >> $tempFile
+		# If last row, append new line to the file
+		else
+			echo >> $tempFile
+		fi
+
+		# Increment column index to work on the next column
+		(( colIndex++ ))
+	done
+
+	# Display the means and delete the tempFile
+	cat $tempFile
+	rm $tempFile $matrixFile 
 }
 
 # matrix add MATRIX_LEFT MATRIX_RIGHT
@@ -106,32 +250,34 @@ function multiplyMatrices() {
 # 	main [<options>] [<arguments>]
 #
 # Description:
-#   	Entry point for the program, handling basic option parsing and dispatching.
+#   	Entry point for the program. Handles basic option parsing and dispatching
 function main() {
-	echo "main() function START"	
-	
-	echo "Inputs: $@"
-
 	case "$1" in 
 		"dims")
-			echo "Operation == dims"
-			getDimensions "$@"
+			checkArguments $@
+			checkFiles $@
+			getDimensions $@
 			;;
 		"transpose")
-			echo "Operation == tranpose"
-			transposeMatrix "$@"
+			checkArguments $@
+			checkFiles $@
+			transposeMatrix $@
 			;;
 		"mean")
-			echo "Operation == mean"
-			getMean "$@"
+			checkArguments $@
+			checkFiles $@
+			getMean $@
 			;;
 		"add")
-			echo "Operation == add"
-			addMatrices "$@"
+			checkArguments $@
+			checkFiles $@
+			checkMatrixDimensions $@
+			addMatrices $2 $3
 			;;
 		"multiply")
-			echo "Operation == multiply"
-			multiplyMatrices "$@"
+			checkArguments $@
+			checkFiles $@
+			multiplyMatrices $2 $3
 			;;
 		*)
 			echo "OPERATION UNKNOWN!!!"
@@ -139,8 +285,6 @@ function main() {
 	esac
 }
 
-# Call `_main` after everything has been defined.
+# Call main() after everything has been defined.
 main "$@"
-echo "main() function END"
-echo "=========="
 

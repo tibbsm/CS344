@@ -7,29 +7,40 @@ numOfRows=$(wc -l < $1)
 numOfItems=$(wc -w < $1)
 numOfCols=$(( numOfItems / numOfRows ))
 
-index=1
-echo $1
-cat $1
-echo $numOfRows "x" $numOfCols
-echo "Total: " $numOfItems
-echo "Index: " $index
-echo
+
+# This variable keeps track of which column the function is currently transposing
+colIndex=1
+
+#echo $1
+#cat $1
+#echo $numOfRows "x" $numOfCols
+#echo "Total: " $numOfItems
+#echo "Index: " $colIndex
+#echo
 
 #cat $1 | paste -s -d '\t' $1 > $tempFile
 
-while [[ $index -le $numOfCols ]]
+while [[ $colIndex -le $numOfCols ]]
 do 
 
-	echo "Index: " $index
-	
+	#echo "Index: " $colIndex
+
+	# This variable keeps track of which row we are working on	
+	rowIndex=1
 	while read myLine
 	do
-		echo $myLine | cut -d " " -f $index
+		if [[ $rowIndex -lt $numOfRows ]] 
+		then
+			echo $myLine | cut -d " " -f $colIndex | tr '\n' '\t' >> $tempFile
+			(( rowIndex++ ))
+		else 
+			echo $myLine | cut -d " " -f $colIndex >> $tempFile
+		fi
 	done < $1
 
-
-	echo "Index: " $index
-	(( index++ ))	
-
+	#echo "Index: " $colIndex
+	(( colIndex++ ))	
 done
 
+cat $tempFile
+rm $tempFile
