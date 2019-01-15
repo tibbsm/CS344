@@ -68,6 +68,7 @@ function checkMatrixDimensions() {
 		if [[ $numOfCols1 != $numOfRows2 ]]
 		then 
 			>&2 echo "Error: You cannot multiply these matrices."
+			exit 1
 		fi
 	fi	
 }
@@ -229,10 +230,50 @@ function getMean() {
 # matrix add MATRIX_LEFT MATRIX_RIGHT
 # add should take two MxN matrices and add them together element-wise to produce an MxN matrix. add should return an error if the matrices do not have the same dimensions.
 function addMatrices() {
-	echo; echo "addMatrices() function START"
-	echo "Inputs : $@"
-}
 
+	# Temporary file to hold the sums from adding the matrices
+	tempFile="addMatricesTempFile$$"
+
+	# Matrix dimension variables
+        numOfRows=$(wc -l < $1)
+        numOfItems=$(wc -w < $1)
+        numOfCols=$(( numOfItems / numOfRows ))
+
+	# Read each line of data from both matrices
+	while read myLine1 && read myLine2 <&3
+	do
+		# Initialize variables hold sums and track column indices
+		sum=0
+		colIndex=1
+		
+		# For each column in a row
+		while [[ $colIndex -le $numOfCols ]]
+		do
+			# Get the numbers to add from each matrix
+			num1=$(echo $myLine1 | cut -d " " -f $colIndex)
+			num2=$(echo $myLine2 | cut -d " " -f $colIndex)
+
+			# Calculate the sum
+			sum=$(( num1 + num2 ))
+
+			# If not the last column, append tab after number
+			if [[ $colIndex -lt $numOfCols ]]
+			then 
+				echo -e -n "$sum\t" >> $tempFile
+			# If last column, append new line after number
+			else
+				echo $sum >> $tempFile
+			fi
+			
+			# Increment column index
+			(( colIndex++ ))
+		done
+
+	done<$1 3<$2
+		
+	cat $tempFile
+	rm $tempFile	
+}
 
 # matrix multiply MATRIX_LEFT MATRIX_RIGHT   
 # multiply should take an MxN and NxP matrix and produce an MxP matrix. Note that, unlike addition, matrix multiplication is not commutative. That is A*B != B*A.
@@ -277,6 +318,7 @@ function main() {
 		"multiply")
 			checkArguments $@
 			checkFiles $@
+			checkMatrixDimensions $@
 			multiplyMatrices $2 $3
 			;;
 		*)
