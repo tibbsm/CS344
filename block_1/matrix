@@ -64,7 +64,7 @@ function checkMatrixDimensions() {
 		fi	
 	elif [[ $1 == "multiply" ]]
 	then
-# In order for matrix multiplication to be defined, the number of columns in the first matrix must be equal to the number of rows in the second matrix.
+	# The number of columns in the first matrix must be equal to the number of rows in the second matrix.
 		if [[ $numOfCols1 -ne $numOfRows2 ]]
 		then 
 			echo $numOfCols1 $numOfRows2
@@ -283,11 +283,11 @@ function multiplyMatrices() {
 	# Temporary file to hold the products of multiplying matrices
 	tempMultiplyFile="multiplyMatricesTempFile$$"
 
-	# Temporary file to hold transposed matrix 2 
-	tempMatrixFile="tempMatrixFile$$"
-	
-	# Transpose matrix 2 into the tempMatrixFile
-	transposeMatrix $@ > "$tempMatrixFile"
+	# Temporary file to hold transposed matrix 2
+	tempMatrix="tempMultMatrixFile$$"
+
+	# Transpose matrix 2 into the tempMatrix
+	transposeMatrix $@ > ${tempMatrix}
 
 	# Initialize variable to hold number of rows
 	numOfRows1=$(wc -l < $1)
@@ -310,21 +310,22 @@ function multiplyMatrices() {
 
 			if [[ $index1 -lt $numOfRows1 ]]
 			then
-				echo -e -n "$sum\t" >> $tempMatrixFile
+				echo -e -n "$sum\t" >> $tempMultiplyFile
 			else
 				echo $sum >> $tempMultiplyFile
 			fi
-		done < $tempMatrixFile
+		done < $tempMatrix
 	done < $1
 
 	if [[ -r $tempMultiplyFile ]]
 	then
 		cat $tempMultiplyFile
 		rm $tempMultiplyFile
-	elif [[ -r $tempMatrix ]]
+	fi
+	if [[ -r $tempMatrix ]]
 	then
-		cat $tempMatrixFile
-		rm $tempMatrixFile
+	#	cat $tempMatrix
+		rm $tempMatrix
 	fi
 }
 

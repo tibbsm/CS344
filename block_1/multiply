@@ -2,7 +2,7 @@
 
 function transposeMatrix() {
 
-        matrixFile="tempMatrixFile$$"
+        matrixFile="tempMatrixFile"
 
         if [[ $# > 1 ]]
         then
@@ -12,7 +12,7 @@ function transposeMatrix() {
         fi
 
         # Temporary file to build and store transposed matrix. Will not be saved.
-        tempFile="transposeMatrixTempFile$$"
+        tempFile="transposeMatrixTempFile"
 
         # Matrix dimension variables
         numOfRows=$(wc -l < $matrixFile)
@@ -52,14 +52,10 @@ function transposeMatrix() {
 }
 
 
-tmpFile="tempfile"
+tmpFile="multiplyTempfile"
+tempMatrix="tempMatrixFile$$"
 
-# the number of columns in the first matrix must be equal to the number of rows in the second matrix.
-
-tempMatrix="tempMatrixFile"
-
-transposeMatrix $@ > "$tempMatrix"
-#cat "$tempMatrix"
+transposeMatrix $@ > ${tempMatrix}
 
 # Make the input row file
 numOfRows1=$(wc -l < $1)
@@ -125,7 +121,7 @@ done < $1
 if [[ -r $tmpFile ]]
 then
 	cat $tmpFile
-	rm $tempFile
+	rm $tmpFile
 elif [[ -r $tempMatrix ]]
 then
 	cat $tempMatrix
