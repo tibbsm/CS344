@@ -297,6 +297,9 @@ function multiplyMatrices() {
 	numOfItems2=$(wc -w < $2)
         numOfCols2=$(( numOfItems2 / numOfRows2 ))
 
+#	echo $numOfRows1 $numOfCols1
+#	echo $numOfRows2 $numOfCols2
+
 	while read myLine1
 	do
 		index1=0
@@ -312,7 +315,7 @@ function multiplyMatrices() {
 
 			(( index1++ ))
 
-			if [[ $index1 -lt $numOfCols1 ]]
+			if [[ $index1 -lt $numOfCols2 ]]
 			then
 				echo -e -n "$sum\t" >> $tempMultiplyFile
 			else
