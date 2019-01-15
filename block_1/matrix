@@ -67,7 +67,6 @@ function checkMatrixDimensions() {
 	# The number of columns in the first matrix must be equal to the number of rows in the second matrix.
 		if [[ $numOfCols1 -ne $numOfRows2 ]]
 		then 
-			echo $numOfCols1 $numOfRows2
 			>&2 echo "Error: You cannot multiply these matrices."
 			exit 1
 		fi
