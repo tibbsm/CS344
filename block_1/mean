@@ -1,0 +1,14 @@
+#!/bin/bash
+
+sum=0
+
+cat $1 | paste -s -d '\t' $1 > tempFile
+
+read -r string < tempFile
+
+for i in $string 
+do 
+	echo "Adding " $i
+	sum=$(( sum + i ))
+	echo "Sum: " $sum
+done 

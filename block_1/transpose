@@ -3,17 +3,33 @@
 tempFile="tempfile"
 
 # Make the input row file
-numOfLines=$(wc -l < $1)
-totalNum=$(wc -w < $1)
-numOfRows=$(( totalNum / numOfLines ))
+numOfRows=$(wc -l < $1)
+numOfItems=$(wc -w < $1)
+numOfCols=$(( numOfItems / numOfRows ))
+
 index=1
-j=1
+echo $1
+cat $1
+echo $numOfRows "x" $numOfCols
+echo "Total: " $numOfItems
+echo "Index: " $index
+echo
 
-cat $1 | paste -s -d '\t' $1 > $tempFile
+#cat $1 | paste -s -d '\t' $1 > $tempFile
 
-read -r string< $tempFile
+while [[ $index -le $numOfCols ]]
+do 
+
+	echo "Index: " $index
+	
+	while read myLine
+	do
+		echo $myLine | cut -d " " -f $index
+	done < $1
 
 
-cat $tempFile
-rm $tempFile
+	echo "Index: " $index
+	(( index++ ))	
+
+done
 
