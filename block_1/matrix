@@ -369,7 +369,8 @@ function main() {
 			multiplyMatrices $2 $3
 			;;
 		*)
-			echo "OPERATION UNKNOWN!!!"
+			>&2 echo "ERROR: Operation '$1' unknown."
+                        exit 1	
 			;;
 	esac
 }
