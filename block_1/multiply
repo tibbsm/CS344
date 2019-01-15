@@ -52,7 +52,7 @@ function transposeMatrix() {
 }
 
 
-tempFile="tempfile"
+tmpFile="tempfile"
 
 # the number of columns in the first matrix must be equal to the number of rows in the second matrix.
 
@@ -70,22 +70,31 @@ numOfRows2=$(wc -l < $tempMatrix)
 numOfItems2=$(wc -w < $tempMatrix)
 numOfCols2=$(( numOfItems2 / numOfRows2 ))
 
-echo "1:$numOfRows1 x $numOfCols1 ($numOfItems1)"
-echo "2:$numOfRows2 x $numOfCols2 ($numOfItems2)"
-echo 
-echo
-
-
 while read myLine1 
 do
-	while read myLine2 <&3
+	index1=0
+	while read myLine2 
 	do
-		echo $myLine1 "-" $myLine2
-	done 3< $tempMatrix
+		sum=0
+		for ((index2=1; index2 <= $numOfRows2; index2++))
+		do
+			num1=$(echo $myLine1 | cut -d " " -f $index2)
+			num2=$(echo $myLine2 | cut -d " " -f $index2)
+			sum=$(( sum + (num1 * num2) ))
+		done
+		
+		
+		(( index1++ ))
+		
+		if [[ $index1 -lt $numOfRows1 ]]
+		then
+			echo -e -n "$sum\t" >> $tmpFile
+		else
+			echo $sum >> $tmpFile
+		fi
+	
+	done < $tempMatrix
 done < $1 
-
-echo 
-echo
 
 #sum=0
 #while read myLine1 && read myLine2 <&3
@@ -113,9 +122,9 @@ echo
 #
 #done < $1 3< $2
 
-if [[ -r $tempFile ]]
+if [[ -r $tmpFile ]]
 then
-	cat $tempFile
+	cat $tmpFile
 	rm $tempFile
 elif [[ -r $tempMatrix ]]
 then
