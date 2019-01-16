@@ -124,12 +124,15 @@ function check_matrix_dimensions() {
 ###############################################################################
 
 function get_dimensions() {
-
+	
+	# Initialize the temp file to hold the matrix
 	matrixFile="tempMatrixFile$$"
 
+	# If there is a matrix file copy it into matrixFile
 	if [[ "${#}" -gt 1 ]]
 	then 
 		cat "${2}" > "${matrixFile}"
+	# Otherwise, get data from stdin
 	else 
 		cat > "${matrixFile}"
 	fi
@@ -143,73 +146,88 @@ function get_dimensions() {
         	((row++))
 	done < "${matrixFile}"
 
-	# Initialize columns variable to the total number of items in the matrix 
+	# Initialize columns variable to the total # of items in the matrix 
 	col=$(wc -w < "${matrixFile}")
 
-	# Divide the total items by the number of rows to get the number of columns
+	# Divide the total items by the # of rows to get the # of columns
 	col=$((col / row))
 
 	# Print out the dimensions of the matrix [row] [col]
 	echo "${row}" "${col}"
 
+	# Remove the temp file
 	rm "${matrixFile}"
 }
 
 ###############################################################################
-# Program Functions
+# transpose_matrix()
+#
+# Usage: 
+# 	transpose_matrix [MATRIX] 
+#
+# Description:
+# This function reflects the elements of a matrix along the main diagonal.
+# A MxN matrix will become an NxM matrix and the values along the main
+# diagonal will remain unchanged.
 ###############################################################################
-# matrix transpose [MATRIX]
-# transpose should reflect the elements of the matrix along the main diagonal.
-# Thus, an MxN matrix will become an NxM matrix and the values along the main diagonal will remain unchanged.
-function transposeMatrix() {
+function transpose_matrix() {
 
+	# Initialize temporary file to hold the matrix
 	matrixFile="tempMatrixFile$$"
 
-        if [[ $# > 1 ]]
+	# If a matrix file is passed in copy it to the temp file
+        if [[ ${#} -gt 1 ]]
         then
-                cat $2 > "$matrixFile"
+                cat ${2} > "${matrixFile}"
+	# Otherwise, get the matrix information from stdin
         else
-                cat > "$matrixFile"
+                cat > "${matrixFile}"
         fi
 
-	# Temporary file to build and store transposed matrix. Will not be saved.
-	transposeTempFile="transposeMatrixTempFile$$"
+	# Temporary file to build and store transposed matrix. 
+	transposeTempFile="transpose_matrixTempFile$$"
 
 	# Matrix dimension variables
-	numOfRows=$(wc -l < $matrixFile)
-	numOfItems=$(wc -w < $matrixFile)
-	numOfCols=$(( numOfItems / numOfRows ))
+	numOfRows="$(wc -l < $matrixFile)"
+	numOfItems="$(wc -w < $matrixFile)"
+	numOfCols="$(( numOfItems / numOfRows ))"
 
-	# This variable keeps track of which column the function is currently transposing
+	# This variable tracks which column the function is transposing
 	colIndex=1
 
 	# For each column in the original matrix
-	while [[ $colIndex -le $numOfCols ]]
+	while [[ "${colIndex}" -le "${numOfCols}" ]]
 	do
-		# This variable keeps track of which row the function is working on
+		# This variable tracks the row the function is working on
 		rowIndex=1
 
 		# For each row in the original matrix
 		while read myLine
 		do
-			# If not the last row, append number at colIndex followed by a tab
-			if [[ $rowIndex -lt $numOfRows ]]
+			# If not the last row, append number at colIndex
+			# followed by a tab
+			if [[ "${rowIndex}" -lt "${numOfRows}" ]]
 			then
-				echo $myLine | cut -d " " -f $colIndex | tr '\n' '\t' >> $transposeTempFile
+				echo "${myLine}" |
+					 cut -d " " -f "${colIndex}" |
+					 tr '\n' '\t' >>
+					 "${transposeTempFile}"
 				(( rowIndex++ ))
 			# If last row, append number followed by a new line
 			else
-				echo $myLine | cut -d " " -f $colIndex >> $transposeTempFile
+				echo "${myLine}" |
+					 cut -d " " -f "${colIndex}" >>
+					 "${transposeTempFile}"
 			fi
-		done < $matrixFile
+		done < "${matrixFile}"
 	
 		# Increment index to transpose the next column	
 		(( colIndex++ ))
 	done
 
 	# Display the transposed matrix & delete the temp file
-	cat $transposeTempFile
-	rm $transposeTempFile $matrixFile
+	cat "${transposeTempFile}"
+	rm "${transposeTempFile $matrixFile}"
 }
 
 
@@ -343,7 +361,7 @@ function multiplyMatrices() {
 	tempMatrix="tempMultMatrixFile$$"
 
 	# Transpose matrix 2 into the tempMatrix
-	transposeMatrix $@ > ${tempMatrix}
+	transpose_matrix $@ > ${tempMatrix}
 
 	# Initialize variable to hold number of rows
 	numOfRows1=$(wc -l < $1)
@@ -413,7 +431,7 @@ function main() {
 		"transpose")
 			check_arguments $@
 			check_files "${@:2}"
-			transposeMatrix $@
+			transpose_matrix $@
 			;;
 		"mean")
 			check_arguments $@
