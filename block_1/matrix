@@ -431,23 +431,23 @@ function main() {
 			;;
 		"transpose")
 			check_arguments $@
-			check_files $@
+			check_files "${@:2}"
 			transposeMatrix $@
 			;;
 		"mean")
 			check_arguments $@
-			check_files $@
+			check_files "${@:2}"
 			getMean $@
 			;;
 		"add")
 			check_arguments $@
-			check_files $@
+			check_files "${@:2}"
 			checkMatrixDimensions $@
 			addMatrices $2 $3
 			;;
 		"multiply")
 			check_arguments $@
-			check_files $@
+			check_files "${@:2}"
 			checkMatrixDimensions $@
 			multiplyMatrices $2 $3
 			;;
