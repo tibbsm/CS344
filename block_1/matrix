@@ -97,8 +97,8 @@ function check_matrix_dimensions() {
 
 	# If add operation, but matrices are the same dimensions, print error
 	# message and return 1,	
-	if [[ "${1}" == "add" && "${numOfRows1} -ne "${numOfRows2}" ||
-		 "${1}" == "add" && "${numOfCols1} -ne "${numOfCols2}" ]] 
+	if [[ "${1}" == "add" ]] && [[ "${numOfRows1}" -ne "${numOfRows2}" ]]  ||
+           [[ "${1}" == "add" ]] && [[ "${numOfCols1}" -ne "${numOfCols2}" ]] 
 	then 
 		>&2 echo "Error: You cannot add matrices of different sizes."
 		exit 1
