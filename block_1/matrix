@@ -58,8 +58,6 @@ function check_arguments() {
 # it returns 0. 
 ###############################################################################
 function check_files() {
-echo $#
-echo $@
 
 	for arg in "${@}"
 	do
