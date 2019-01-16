@@ -8,7 +8,7 @@
 # check_arguments()
 #
 # Usage:
-# 	check_arguments <arguments>
+# 	check_arguments [ARGUMENTS]
 # 
 # Description:
 # Checks the number of arguments passed in with corresponding function calls.
@@ -53,7 +53,7 @@ function check_arguments() {
 # check_files()
 #
 # Usage:
-# 	check_files <arguments>
+# 	check_files [ARGUMENTS]
 #
 # Description:
 # This function checks whether passed in files are readable or not. If the
@@ -78,7 +78,7 @@ function check_files() {
 # check_matrix_dimensions()
 #
 # Usage:
-# 	check_matrix_dimensions <arguments>
+# 	check_matrix_dimensions OPERATION MATRIX_LEFT MATRIX_RIGHT
 #
 # Descriptions:
 # This function checks to see if the matrices are capable of being summed or
@@ -113,23 +113,27 @@ function check_matrix_dimensions() {
 
 
 ###############################################################################
-# Program Functions
+# get_dimensions()
+#
+# Usage:
+# 	get_dimensions [MATRIX]
+#
+# Descriptions:
+# This functions takes a matrix file and returns the number of rows, followed
+# by a space, then the number of columns.
 ###############################################################################
-# matrix dims [MATRIX]
-# dims should print the dimensions of the matrix as the number of rows, followed by a space, then the number of columns.
 
-function getDimensions() {
+function get_dimensions() {
 
 	matrixFile="tempMatrixFile$$"
 
-	if [[ $# > 1 ]]
+	if [[ "${#}" -gt 1 ]]
 	then 
-		cat $2 > "$matrixFile"
+		cat "${2}" > "${matrixFile}"
 	else 
-		cat > "$matrixFile"
+		cat > "${matrixFile}"
 	fi
 		
-
 	# Initialize the row count
 	row=0
 
@@ -137,18 +141,18 @@ function getDimensions() {
 	while read myLine
 	do
         	((row++))
-	done < $matrixFile
+	done < "${matrixFile}"
 
 	# Initialize columns variable to the total number of items in the matrix 
-	col=$(wc -w < $matrixFile)
+	col=$(wc -w < "${matrixFile}")
 
 	# Divide the total items by the number of rows to get the number of columns
 	col=$((col / row))
 
 	# Print out the dimensions of the matrix [row] [col]
-	echo $row $col
+	echo "${row}" "${col}"
 
-	rm $matrixFile
+	rm "${matrixFile}"
 }
 
 ###############################################################################
@@ -404,7 +408,7 @@ function main() {
 		"dims")
 			check_arguments $@
 			check_files "${@:2}"
-			getDimensions $@
+			get_dimensions $@
 			;;
 		"transpose")
 			check_arguments $@
