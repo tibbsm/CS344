@@ -208,16 +208,11 @@ function transpose_matrix() {
 			# followed by a tab
 			if [[ "${rowIndex}" -lt "${numOfRows}" ]]
 			then
-				echo "${myLine}" |
-					cut -d " " -f "${colIndex}" |
-					tr '\n' '\t' 
-					>> "${transposeTempFile}"
+				echo $myLine | cut -d " " -f "${colIndex}" | tr '\n' '\t' >> "${transposeTempFile}"
 				(( rowIndex++ ))
 			# If last row, append number followed by a new line
 			else
-				echo "${myLine}" | 
-					cut -d " " -f "${colIndex}" 
-					>> "${transposeTempFile}"
+				echo $myLine | cut -d " " -f "${colIndex}" >> "${transposeTempFile}"
 			fi
 		done < "${matrixFile}"
 	
@@ -227,7 +222,7 @@ function transpose_matrix() {
 
 	# Display the transposed matrix & delete the temp file
 	cat "${transposeTempFile}"
-	rm "${transposeTempFile $matrixFile}"
+	rm "${transposeTempFile}" "${matrixFile}"
 }
 
 
