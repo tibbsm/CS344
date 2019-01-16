@@ -1,49 +1,110 @@
 #!/bin/bash
 
-function checkArguments() {
-	
-	case "$1" in
+
+###############################################################################
+# Program Functions
+###############################################################################
+
+
+
+###############################################################################
+# check_arguments()
+#
+# Usage:
+# 	check_arguments <arguments>
+# 
+# Description:
+# Checks the number of arguments passed in with corresponding function calls.
+# If there is a wrong number of arguments, it prints an error message to
+# stderr. Otherwise, it returns 0.
+#
+###############################################################################
+function check_arguments() {
+
+	err_message="ERROR: You entered the wrong number of arguments."
+	err_info="You entered $(( ${#} - 1)) for the ${1} operation."
+	fix_info="The ${1} operation takes no more than 1 argument."
+	fix_info_2="The ${1} operation takes exactly 2 arguments."
+
+	case "${1}" in
                 "dims" | "transpose" | "mean")
- 			if [[ $# > 2 ]]
+ 			if [[ "${#}" -gt 2 ]]
 			then 
-				>&2 echo "ERROR: You entered too many arguments ($(($#-1))) for the $1 operation."
+				>&2 echo ${err_message} ${err_info}
+				>&2 echo ${fix_info}
 				exit 1
 			fi	
                         ;;
 		"add" | "multiply")	
-			if [[ $# != 3 ]]
+			if [[ "${#}" -ne 3 ]]
 			then 	
-				>&2 echo "ERROR: You entered $(($#-1)) arguments instead of 2 for the $1 operation."
+				>&2 echo ${err_message} ${err_info}
+				>&2 echo ${fix_info_2}
 				exit 1
 			fi
 			;;
 	esac
 }
 
-function checkFiles() {
+###############################################################################
+# check_files()
+#
+# Usage:
+# 	check_files <arguments>
+#
+# Description:
+# This function checks whether passed in files are readable or not. If the
+# files cannot be read it prints an error message and returns. Otherwise,
+# it returns 0. 
+###############################################################################
+function check_files() {
+echo $#
+echo $@
 
-	case "$1" in 
-		"dims" | "transpose" | "mean")
-			if [[ $# > 1 && ! -r $2  ]] 
-       			then
-				>&2 echo "ERROR: $2 file is not readable."
-				exit 1
-       			fi
-			;;
-		"add" | "multiply")
-			if [[ ! -r $2  ]]  
-       			then
-				>&2 echo "ERROR: $2 file is not readable."
-				exit 1
-			elif [[ ! -r $3 ]]
-			then
-				>&2 echo "ERROR: $3 file is not readable."
-				exit 1
-       			fi
-			;;
-	esac
+	for arg in "${@}"
+	do
+		if [[ ! -r "${arg}" ]]
+		then 
+			>&2 echo "ERROR: '"${arg}"' file cannot be read."
+			exit 1
+		fi
+	done
+	
+#	if [[ "${#}" -ge 1 && ! -r "${1}" ]]
+#	then
+#		>&2 echo "ERROR: '"${1}"' file cannot be read."
+#		exit 1
+#	elif [[ "${#}" = 2 && ! -r "${2}" ]]
+#	then
+#		>&2 echo "ERROR: '"${2}"' file cannot be read."
+#	fi
+		
+
+#	case "${1}" in 
+#		"dims" | "transpose" | "mean")
+#			if [[ "${#}" > 1 && ! -r "${2}"  ]] 
+#       			then
+#				>&2 echo "ERROR: '"${2}"' file cannot be read."
+#				exit 1
+#       			fi
+#			;;
+#		"add" | "multiply")
+#			if [[ ! -r "${2}"  ]]  
+#       			then
+#				>&2 echo "ERROR: '"${2}"' file cannot be read."
+#				exit 1
+#			elif [[ ! -r $3 ]]
+#			then
+#				>&2 echo "ERROR: '"${3}"' file cannot be read."
+#				exit 1
+#       			fi
+#			;;
+#	esac
 }
 
+###############################################################################
+# Program Functions
+###############################################################################
 function checkMatrixDimensions() {
 	# Matrix dimension variables
         numOfRows1=$(wc -l < $2)
@@ -74,6 +135,9 @@ function checkMatrixDimensions() {
 }
 
 
+###############################################################################
+# Program Functions
+###############################################################################
 # matrix dims [MATRIX]
 # dims should print the dimensions of the matrix as the number of rows, followed by a space, then the number of columns.
 
@@ -110,6 +174,9 @@ function getDimensions() {
 	rm $matrixFile
 }
 
+###############################################################################
+# Program Functions
+###############################################################################
 # matrix transpose [MATRIX]
 # transpose should reflect the elements of the matrix along the main diagonal.
 # Thus, an MxN matrix will become an NxM matrix and the values along the main diagonal will remain unchanged.
@@ -165,6 +232,9 @@ function transposeMatrix() {
 }
 
 
+###############################################################################
+# Program Functions
+###############################################################################
 # matrix mean [MATRIX]
 # mean should take an MxN matrix and return an 1xN row vector, where the first element is the mean of column one, the second element is the mean of column two, and so on.
 function getMean() {
@@ -227,6 +297,9 @@ function getMean() {
 	rm $tempMeanFile $matrixFile 
 }
 
+###############################################################################
+# Program Functions
+###############################################################################
 # matrix add MATRIX_LEFT MATRIX_RIGHT
 # add should take two MxN matrices and add them together element-wise to produce an MxN matrix. add should return an error if the matrices do not have the same dimensions.
 function addMatrices() {
@@ -275,6 +348,9 @@ function addMatrices() {
 	rm $tempAddFile	
 }
 
+###############################################################################
+# Program Functions
+###############################################################################
 # matrix multiply MATRIX_LEFT MATRIX_RIGHT   
 # multiply should take an MxN and NxP matrix and produce an MxP matrix. Note that, unlike addition, matrix multiplication is not commutative. That is A*B != B*A.
 function multiplyMatrices() {
@@ -336,9 +412,9 @@ function multiplyMatrices() {
 	fi
 }
 
-####################
+###############################################################################
 # Main
-####################
+###############################################################################
 # main()
 #
 # Usage:
@@ -349,29 +425,29 @@ function multiplyMatrices() {
 function main() {
 	case "$1" in 
 		"dims")
-			checkArguments $@
-			checkFiles $@
+			check_arguments $@
+			check_files "${@:2}"
 			getDimensions $@
 			;;
 		"transpose")
-			checkArguments $@
-			checkFiles $@
+			check_arguments $@
+			check_files $@
 			transposeMatrix $@
 			;;
 		"mean")
-			checkArguments $@
-			checkFiles $@
+			check_arguments $@
+			check_files $@
 			getMean $@
 			;;
 		"add")
-			checkArguments $@
-			checkFiles $@
+			check_arguments $@
+			check_files $@
 			checkMatrixDimensions $@
 			addMatrices $2 $3
 			;;
 		"multiply")
-			checkArguments $@
-			checkFiles $@
+			check_arguments $@
+			check_files $@
 			checkMatrixDimensions $@
 			multiplyMatrices $2 $3
 			;;
