@@ -24,7 +24,9 @@ def main():
 
 	# Randomly generate 2 numbers print them and the product
 	num1, num2=random.randint(1, 42), random.randint(1, 42)
-	print(num1,"\n", num2,"\n",(num1 * num2), sep='')
+	print(num1)
+	print(num2)
+	print(num1 * num2))
 
 if __name__ == "__main__":
     main()
