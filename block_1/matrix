@@ -262,17 +262,17 @@ function mean() {
 }
 
 ###############################################################################
-# add_matrices()
+# add()
 #
 # Usage: 
-# 	add_matrices MATRIX_LEFT MATRIX_RIGHT
+# 	add MATRIX_LEFT MATRIX_RIGHT
 # 
 # Description:
 # This function takes two MxN matrices and adds them together element-wise
 # to produce a MxN matrix. It will return an error if the matrices do not
 # have the same dimensions.
 ###############################################################################
-function add_matrices() {
+function add() {
 
 	# Matrix dimension variables
         numOfRows1=$(wc -l < "${1}")
@@ -325,17 +325,22 @@ function add_matrices() {
 		done
 	done<"${1}" 3<"${2}"
 
-	# Print the final matrix and then delete the temp file		
+	# Print the final matrix and then delete the temp file
 	cat "${tempAddFile}"
 	rm "${tempAddFile}"
 }
 
 ###############################################################################
-# Program Functions
+# multiply()
+#
+# Usage:
+# 	multiply MATRIX_LEFT MATRIX_RIGHT
+#
+# Description:
+# This function should take on a MxN and NxP matrix and produce an MxP matrix.
+# Matrix multiplication is not commutative. A*B != B*A
 ###############################################################################
-# matrix multiply MATRIX_LEFT MATRIX_RIGHT   
-# multiply should take an MxN and NxP matrix and produce an MxP matrix. Note that, unlike addition, matrix multiplication is not commutative. That is A*B != B*A.
-function multiplyMatrices() {
+function multiply() {
 
 	# Initialize variable to hold number of rows
 	numOfRows1=$(wc -l < $1)
@@ -354,13 +359,13 @@ function multiplyMatrices() {
         fi	
 
 	# Temporary file to hold the products of multiplying matrices
-	tempMultiplyFile="multiplyMatricesTempFile$$"
+	tempMultiplyFile="multiplyTempFile$$"
 
 	# Temporary file to hold transposed matrix 2
 	tempMatrix="tempMultMatrixFile$$"
 
 	# Transpose matrix 2 into the tempMatrix
-	transpose "${@}" > "${tempMatrix}"
+	transpose "${2}" > "${tempMatrix}"
 
 	# For every row in MATRIX_RIGHT
 	while read myLine1
@@ -373,8 +378,10 @@ function multiplyMatrices() {
 		do
 			# Initialize sum variable 
 			sum=0
-			
-			# Multiply each column of each row and sum their products
+
+			# Multiply each row of MATRIX_LEFT by MATRIX_RIGHT
+			# Since MATRIX_RIGHT was transposed, numOfCols is tracking
+			# the number of rows in the tranposed matrix.
 			for ((col_index=1; col_index <= $numOfCols2; col_index++))
 			do
 				num1=$(echo ${myLine1} | cut -d " " -f ${col_index})
@@ -397,46 +404,27 @@ function multiplyMatrices() {
 	done < "${1}"
 
 	# Print product matrix and remove temp files
-	if [[ -r "${tempMultiplyFile}" ]]
-	then
-		cat "${tempMultiplyFile}"
-		rm "${tempMultiplyFile}"
-	fi
-	if [[ -r "${tempMatrix}" ]]
-	then
-		rm "${tempMatrix}"
-	fi
+	cat $tempMultiplyFile
+	rm "${tempMultiplyFile}" "${tempMatrix}"
 }
 
 ###############################################################################
-# Main
-###############################################################################
 # main()
-#
+###############################################################################
 # Usage:
-# 	main [<options>] [<arguments>]
+# 	main [<operation>] [<arguments>]
 #
 # Description:
 #   	Entry point for the program.
 function main() {
-	case "$1" in 
-		"dims" | "transpose" | "mean")
+	case "${1}" in 
+		"dims" | "transpose" | "mean" | "add" | "multiply")
 			check_arguments $@
 			check_files "${@:2}"
 			"${1}" "${@:2}"
 			;;
-		"add")
-			check_arguments $@
-			check_files "${@:2}"
-			add_matrices $2 $3
-			;;
-		"multiply")
-			check_arguments $@
-			check_files "${@:2}"
-			multiplyMatrices $2 $3
-			;;
 		*)
-			>&2 echo "ERROR: Operation '$1' unknown."
+			>&2 echo "ERROR: Invalid operation: '"${1}"'."
                         exit 1	
 			;;
 	esac
