@@ -184,7 +184,7 @@ function transpose_matrix() {
         fi
 
 	# Temporary file to build and store transposed matrix. 
-	transposeTempFile="transpose_matrixTempFile$$"
+	transposeTempFile="transposeMatrixTempFile$$"
 
 	# Matrix dimension variables
 	numOfRows="$(wc -l < $matrixFile)"
@@ -300,19 +300,37 @@ function get_mean() {
 }
 
 ###############################################################################
-# Program Functions
+# add_matrices()
+#
+# Usage: 
+# 	add_matrices MATRIX_LEFT MATRIX_RIGHT
+# 
+# Description:
+# This function takes two MxN matrices and adds them together element-wise
+# to produce a MxN matrix. It will return an error if the matrices do not
+# have the same dimensions.
 ###############################################################################
-# matrix add MATRIX_LEFT MATRIX_RIGHT
-# add should take two MxN matrices and add them together element-wise to produce an MxN matrix. add should return an error if the matrices do not have the same dimensions.
-function addMatrices() {
+function add_matrices() {
+
+	# Matrix dimension variables
+        numOfRows1=$(wc -l < "${1}")
+        numOfItems1=$(wc -w < "${1}")
+        numOfCols1=$(( numOfItems1 / numOfRows1 ))
+
+        numOfRows2=$(wc -l < "${2}")
+        numOfItems2=$(wc -w < "${2}")
+        numOfCols2=$(( numOfItems2 / numOfRows2 ))
+
+	# Check if the matrices have the same dimensions
+	if [[ "${numOfRows1}" -ne "${numOfRows2}" ]]  ||
+           [[ "${numOfCols1}" -ne "${numOfCols2}" ]]
+        then
+                >&2 echo "Error: You cannot add matrices of different sizes."
+                exit 1	
+	fi
 
 	# Temporary file to hold the sums from adding the matrices
 	tempAddFile="addMatricesTempFile$$"
-
-	# Matrix dimension variables
-        numOfRows=$(wc -l < $1)
-        numOfItems=$(wc -w < $1)
-        numOfCols=$(( numOfItems / numOfRows ))
 
 	# Read each line of data from both matrices
 	while read myLine1 && read myLine2 <&3
@@ -322,7 +340,7 @@ function addMatrices() {
 		colIndex=1
 		
 		# For each column in a row
-		while [[ $colIndex -le $numOfCols ]]
+		while [[ "${colIndex}" -le "${numOfCols1}" ]]
 		do
 			# Get the numbers to add from each matrix
 			num1=$(echo $myLine1 | cut -d " " -f $colIndex)
@@ -332,22 +350,22 @@ function addMatrices() {
 			sum=$(( num1 + num2 ))
 
 			# If not the last column, append tab after number
-			if [[ $colIndex -lt $numOfCols ]]
+			if [[ "${colIndex}" -lt "${numOfCols1}" ]]
 			then 
-				echo -e -n "$sum\t" >> $tempAddFile
+				echo -e -n "${sum}\t" >> "${tempAddFile}"
 			# If last column, append new line after number
 			else
-				echo $sum >> $tempAddFile
+				echo "${sum}" >> "${tempAddFile}"
 			fi
 			
 			# Increment column index
 			(( colIndex++ ))
 		done
+	done<"${1}" 3<"${2}"
 
-	done<$1 3<$2
-		
-	cat $tempAddFile
-	rm $tempAddFile	
+	# Print the final matrix and then delete the temp file		
+	cat "${tempAddFile}"
+	rm "${tempAddFile}"
 }
 
 ###############################################################################
@@ -444,8 +462,7 @@ function main() {
 		"add")
 			check_arguments $@
 			check_files "${@:2}"
-			check_matrix_dimensions $@
-			addMatrices $2 $3
+			add_matrices $2 $3
 			;;
 		"multiply")
 			check_arguments $@
