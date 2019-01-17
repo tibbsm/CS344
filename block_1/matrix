@@ -75,24 +75,24 @@ function check_files() {
 }
 
 ###############################################################################
-# get_dimensions()
+# dims()
 #
 # Usage:
-# 	get_dimensions [MATRIX]
+# 	dims [MATRIX]
 #
 # Descriptions:
 # This functions takes a matrix file and returns the number of rows, followed
 # by a space, then the number of columns.
 ###############################################################################
-function get_dimensions() {
+function dims() {
 	
 	# Initialize the temp file to hold the matrix
 	matrixFile="tempMatrixFile$$"
 
 	# If there is a matrix file copy it into matrixFile
-	if [[ "${#}" -gt 1 ]]
+	if [[ "${#}" -gt 0 ]]
 	then 
-		cat "${2}" > "${matrixFile}"
+		cat "${1}" > "${matrixFile}"
 	# Otherwise, get data from stdin
 	else 
 		cat > "${matrixFile}"
@@ -121,25 +121,25 @@ function get_dimensions() {
 }
 
 ###############################################################################
-# transpose_matrix()
+# transpose()
 #
 # Usage: 
-# 	transpose_matrix [MATRIX] 
+# 	transpose [MATRIX] 
 #
 # Description:
 # This function reflects the elements of a matrix along the main diagonal.
 # A MxN matrix will become an NxM matrix and the values along the main
 # diagonal will remain unchanged.
 ###############################################################################
-function transpose_matrix() {
+function transpose() {
 
 	# Initialize temporary file to hold the matrix
 	matrixFile="tempMatrixFile$$"
 
 	# If a matrix file is passed in copy it to the temp file
-        if [[ ${#} -gt 1 ]]
+        if [[ ${#} -gt 0 ]]
         then
-                cat ${2} > "${matrixFile}"
+                cat ${1} > "${matrixFile}"
 	# Otherwise, get the matrix information from stdin
         else
                 cat > "${matrixFile}"
@@ -188,7 +188,7 @@ function transpose_matrix() {
 
 
 ###############################################################################
-# get_mean()
+# mean()
 #
 # Usage:
 # 	mean [MATRIX]
@@ -198,15 +198,15 @@ function transpose_matrix() {
 # first element is the mean of column one, the second is the mean of column
 # two, and so on.
 ###############################################################################
-function get_mean() {
+function mean() {
 
 	# Initialize temp file to hold the matrix means
 	matrixFile="tempMatrixFile$$"
 
 	# If a matrix file is passed in copy it to the temp file
-        if [[ "${#}" -gt 1 ]]
+        if [[ "${#}" -gt 0 ]]
         then
-                cat "${2}" > "$matrixFile"
+                cat "${1}" > "$matrixFile"
 	# Otherwise, get the matrix information from stdin
         else
                 cat > "$matrixFile"
@@ -360,7 +360,7 @@ function multiplyMatrices() {
 	tempMatrix="tempMultMatrixFile$$"
 
 	# Transpose matrix 2 into the tempMatrix
-	transpose_matrix "${@}" > "${tempMatrix}"
+	transpose "${@}" > "${tempMatrix}"
 
 	# For every row in MATRIX_RIGHT
 	while read myLine1
@@ -420,20 +420,10 @@ function multiplyMatrices() {
 #   	Entry point for the program.
 function main() {
 	case "$1" in 
-		"dims")
+		"dims" | "transpose" | "mean")
 			check_arguments $@
 			check_files "${@:2}"
-			get_dimensions $@
-			;;
-		"transpose")
-			check_arguments $@
-			check_files "${@:2}"
-			transpose_matrix $@
-			;;
-		"mean")
-			check_arguments $@
-			check_files "${@:2}"
-			get_mean $@
+			"${1}" "${@:2}"
 			;;
 		"add")
 			check_arguments $@
