@@ -1,6 +1,14 @@
 #!/bin/bash
 
 ###############################################################################
+# Name: 	Marc Tibbs
+# Email:	tibbsm@oregonstate.edu
+# Class: 	CS344 - Spring 2019
+# Assignment:	Program 1
+# Due date:	Jan 28 2019
+###############################################################################
+
+###############################################################################
 # Program Functions
 ###############################################################################
 
@@ -382,10 +390,10 @@ function multiply() {
 			# Multiply each row of MATRIX_LEFT by MATRIX_RIGHT
 			# Since MATRIX_RIGHT was transposed, numOfCols is tracking
 			# the number of rows in the tranposed matrix.
-			for ((col_index=1; col_index <= $numOfCols2; col_index++))
+			for ((colIndex=1; colIndex <= $numOfCols2; colIndex++))
 			do
-				num1=$(echo ${myLine1} | cut -d " " -f ${col_index})
-				num2=$(echo ${myLine2} | cut -d " " -f ${col_index})
+				num1=$(echo ${myLine1} | cut -d " " -f ${colIndex})
+				num2=$(echo ${myLine2} | cut -d " " -f ${colIndex})
 				sum=$(( sum + (num1 * num2) ))
 			done
 
@@ -431,5 +439,5 @@ function main() {
 }
 
 # Call main() after everything has been defined.
-main "$@"
+main "${@}"
 
