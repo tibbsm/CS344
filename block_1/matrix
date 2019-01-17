@@ -122,7 +122,6 @@ function check_matrix_dimensions() {
 # This functions takes a matrix file and returns the number of rows, followed
 # by a space, then the number of columns.
 ###############################################################################
-
 function get_dimensions() {
 	
 	# Initialize the temp file to hold the matrix
@@ -227,17 +226,26 @@ function transpose_matrix() {
 
 
 ###############################################################################
-# Program Functions
+# get_mean()
+#
+# Usage:
+# 	mean [MATRIX]
+#
+# Description:
+# This function takes an MxN matrix and returns an 1xN row vector, where the
+# first element is the mean of column one, the second is the mean of column
+# two, and so on.
 ###############################################################################
-# matrix mean [MATRIX]
-# mean should take an MxN matrix and return an 1xN row vector, where the first element is the mean of column one, the second element is the mean of column two, and so on.
-function getMean() {
+function get_mean() {
 
+	# Initialize temp file to hold the matrix means
 	matrixFile="tempMatrixFile$$"
 
-        if [[ $# > 1 ]]
+	# If a matrix file is passed in copy it to the temp file
+        if [[ "${#}" -gt 1 ]]
         then
-                cat $2 > "$matrixFile"
+                cat "${2}" > "$matrixFile"
+	# Otherwise, get the matrix information from stdin
         else
                 cat > "$matrixFile"
         fi
@@ -246,15 +254,15 @@ function getMean() {
 	tempMeanFile="meanTempFile$$"	
 
 	# Matrix dimension variables
-	numOfRows=$(wc -l < $matrixFile)
-	numOfItems=$(wc -w < $matrixFile)
+	numOfRows=$(wc -l < "${matrixFile}")
+	numOfItems=$(wc -w < "${matrixFile}")
 	numOfCols=$(( numOfItems / numOfRows ))
 
 	# Column index to track which column's mean the function is calculating
 	colIndex=1
 
 	# For each column...
-	while [[ $colIndex -le $numOfCols ]]
+	while [[ "${colIndex}" -le "${numOfCols}" ]]
 	do
 		# Initialize column's sum variable	
 		sum=0
@@ -263,23 +271,23 @@ function getMean() {
 		while read myLine
 		do
 			# Get the number from the column & add it to the sum			
-			num=$(echo $myLine | cut -d " " -f $colIndex)
+			num=$(echo ${myLine} | cut -d " " -f ${colIndex})
 			sum=$(( sum + num ))
-		done < $matrixFile
+		done < "${matrixFile}"
 
 		# Calculate the mean and round to the nearest integer
 		(( mean= ($sum + ($numOfRows /2) * (($sum > 0) * 2 - 1)) / $numOfRows ))
 		
 		# Copy columns mean to the temp file
-		echo -n $mean >> $tempMeanFile
+		echo -n "${mean}" >> "${tempMeanFile}"
 
 		# If row isn't last row, append a tab to the file
-		if [[ $colIndex -lt $numOfCols ]]
+		if [[ "${colIndex}" -lt "${numOfCols}" ]]
 		then
-			echo -n -e '\t' >> $tempMeanFile
+			echo -n -e '\t' >> "${tempMeanFile}"
 		# If last row, append new line to the file
 		else
-			echo >> $tempMeanFile
+			echo >> "${tempMeanFile}"
 		fi
 
 		# Increment column index to work on the next column
@@ -287,8 +295,8 @@ function getMean() {
 	done
 
 	# Display the means and delete the tempMeanFile
-	cat $tempMeanFile
-	rm $tempMeanFile $matrixFile 
+	cat "${tempMeanFile}"
+	rm "${tempMeanFile}" "${matrixFile}"
 }
 
 ###############################################################################
@@ -431,7 +439,7 @@ function main() {
 		"mean")
 			check_arguments $@
 			check_files "${@:2}"
-			getMean $@
+			get_mean $@
 			;;
 		"add")
 			check_arguments $@
