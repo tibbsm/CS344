@@ -39,8 +39,8 @@ function check_arguments() {
 			# message and return 1.
  			if [[ "${#}" -gt 2 ]]
 			then 
-				>&2 echo ${err_message} ${err_info}
-				>&2 echo ${fix_info}
+				>&2 echo "${err_message}" "${err_info}"
+				>&2 echo "${fix_info}"
 				exit 1
 			fi	
                         ;;
@@ -49,8 +49,8 @@ function check_arguments() {
 			# and return 1.
 			if [[ "${#}" -ne 3 ]]
 			then 	
-				>&2 echo ${err_message} ${err_info}
-				>&2 echo ${fix_info_2}
+				>&2 echo "${err_message}" "${err_info}"
+				>&2 echo "${fix_info_2}"
 				exit 1
 			fi
 			;;
