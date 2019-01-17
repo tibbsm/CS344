@@ -75,44 +75,6 @@ function check_files() {
 }
 
 ###############################################################################
-# check_matrix_dimensions()
-#
-# Usage:
-# 	check_matrix_dimensions OPERATION MATRIX_LEFT MATRIX_RIGHT
-#
-# Descriptions:
-# This function checks to see if the matrices are capable of being summed or
-# multiplied. Prints an error message and returns 1 if the matrices are not
-# compatible. Otherwise, it returns 0. 
-###############################################################################
-function check_matrix_dimensions() {
-	# Matrix dimension variables
-        numOfRows1="$(wc -l < $2)"
-        numOfItems1="$(wc -w < $2)"
-        numOfCols1="$(( numOfItems1 / numOfRows1 ))"
-
-        numOfRows2="$(wc -l < $3)"
-        numOfItems2="$(wc -w < $3)"
-        numOfCols2="$(( numOfItems2 / numOfRows2 ))"
-
-	# If add operation, but matrices are the same dimensions, print error
-	# message and return 1,	
-	if [[ "${1}" == "add" ]] && [[ "${numOfRows1}" -ne "${numOfRows2}" ]]  ||
-           [[ "${1}" == "add" ]] && [[ "${numOfCols1}" -ne "${numOfCols2}" ]] 
-	then 
-		>&2 echo "Error: You cannot add matrices of different sizes."
-		exit 1
-	# If multiply operation, but matrix 1's number of colums does not 
-	# equal matrix 2's number of rows, print error and return 1.
-	elif [[ "${1}" == "multiply" && "${numOfCols1}" -ne "${numOfRows2}" ]]
-	then
-		>&2 echo "Error: You cannot multiply these matrices."
-		exit 1
-	fi	
-}
-
-
-###############################################################################
 # get_dimensions()
 #
 # Usage:
@@ -375,15 +337,6 @@ function add_matrices() {
 # multiply should take an MxN and NxP matrix and produce an MxP matrix. Note that, unlike addition, matrix multiplication is not commutative. That is A*B != B*A.
 function multiplyMatrices() {
 
-	# Temporary file to hold the products of multiplying matrices
-	tempMultiplyFile="multiplyMatricesTempFile$$"
-
-	# Temporary file to hold transposed matrix 2
-	tempMatrix="tempMultMatrixFile$$"
-
-	# Transpose matrix 2 into the tempMatrix
-	transpose_matrix $@ > ${tempMatrix}
-
 	# Initialize variable to hold number of rows
 	numOfRows1=$(wc -l < $1)
 	numOfItems1=$(wc -w < $1)
@@ -393,42 +346,65 @@ function multiplyMatrices() {
 	numOfItems2=$(wc -w < $2)
         numOfCols2=$(( numOfItems2 / numOfRows2 ))
 
-#	echo $numOfRows1 $numOfCols1
-#	echo $numOfRows2 $numOfCols2
+	# Check if the dimensions of the matrices are valid.	
+	if [[ "${numOfCols1}" -ne "${numOfRows2}" ]]
+        then
+                >&2 echo "Error: You cannot multiply these matrices."
+                exit 1
+        fi	
 
+	# Temporary file to hold the products of multiplying matrices
+	tempMultiplyFile="multiplyMatricesTempFile$$"
+
+	# Temporary file to hold transposed matrix 2
+	tempMatrix="tempMultMatrixFile$$"
+
+	# Transpose matrix 2 into the tempMatrix
+	transpose_matrix "${@}" > "${tempMatrix}"
+
+	# For every row in MATRIX_RIGHT
 	while read myLine1
 	do
-		index1=0
+		# Variable to track which column to print product 
+		product_index=0
+
+		# For every row in the transposed MATRIX_LEFT
 		while read myLine2
 		do
+			# Initialize sum variable 
 			sum=0
-			for ((index2=1; index2 <= $numOfCols2; index2++))
+			
+			# Multiply each column of each row and sum their products
+			for ((col_index=1; col_index <= $numOfCols2; col_index++))
 			do
-				num1=$(echo $myLine1 | cut -d " " -f $index2)
-				num2=$(echo $myLine2 | cut -d " " -f $index2)
+				num1=$(echo ${myLine1} | cut -d " " -f ${col_index})
+				num2=$(echo ${myLine2} | cut -d " " -f ${col_index})
 				sum=$(( sum + (num1 * num2) ))
 			done
 
-			(( index1++ ))
+			# Increment index to work on the next value
+			(( product_index++ ))
 
-			if [[ $index1 -lt $numOfCols2 ]]
+			# If it's not the last columns, append a tab
+			if [[ "${product_index}" -lt "${numOfCols2}" ]]
 			then
-				echo -e -n "$sum\t" >> $tempMultiplyFile
+				echo -e -n "$sum\t" >> "${tempMultiplyFile}"
+			# Otherwise, append a new line
 			else
-				echo $sum >> $tempMultiplyFile
+				echo "${sum}" >> "${tempMultiplyFile}"
 			fi
-		done < $tempMatrix
-	done < $1
+		done < "${tempMatrix}"
+	done < "${1}"
 
-	if [[ -r $tempMultiplyFile ]]
+	# Print product matrix and remove temp files
+	if [[ -r "${tempMultiplyFile}" ]]
 	then
-		cat $tempMultiplyFile
-		rm $tempMultiplyFile
+		cat "${tempMultiplyFile}"
+		rm "${tempMultiplyFile}"
 	fi
-	if [[ -r $tempMatrix ]]
+	if [[ -r "${tempMatrix}" ]]
 	then
-	#	cat $tempMatrix
-		rm $tempMatrix
+		rm "${tempMatrix}"
 	fi
 }
 
@@ -441,7 +417,7 @@ function multiplyMatrices() {
 # 	main [<options>] [<arguments>]
 #
 # Description:
-#   	Entry point for the program. Handles basic option parsing and dispatching
+#   	Entry point for the program.
 function main() {
 	case "$1" in 
 		"dims")
@@ -467,7 +443,6 @@ function main() {
 		"multiply")
 			check_arguments $@
 			check_files "${@:2}"
-			check_matrix_dimensions $@
 			multiplyMatrices $2 $3
 			;;
 		*)
