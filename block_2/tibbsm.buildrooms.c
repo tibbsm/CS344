@@ -208,7 +208,7 @@ void create_room_directory(struct room* rooms[])
 
 		fclose(fp);
 	}
-	return 0;
+	return;
 }
 
 int main() 
