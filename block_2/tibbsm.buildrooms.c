@@ -207,8 +207,8 @@ void create_room_directory(struct room* rooms[])
 		fprintf(fp, "ROOM TYPE: %s\n", rooms[i]->roomType);
 
 		fclose(fp);
-
-	return;
+	}
+	return 0;
 }
 
 int main() 
