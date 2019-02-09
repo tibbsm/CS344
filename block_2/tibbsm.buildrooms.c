@@ -37,7 +37,7 @@ int is_graph_full(struct room* rooms[])
 {
 	int i;
 
-	for (int i = 0; i < 7; i++)
+	for ( i = 0; i < 7; i++)
 	{
 		if (rooms[i]->numberOfOutboundConnections < 3)
 			return 0;
