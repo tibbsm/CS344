@@ -221,7 +221,6 @@ int main()
 	struct room* rooms[] = { &RoomOne, &RoomTwo, &RoomThree, &RoomFour,
 		&RoomFive, &RoomSix, &RoomSeven };
 
-		
 	// Randomly name rooms and initialize room data.
 	initialize_rooms(rooms);
 
