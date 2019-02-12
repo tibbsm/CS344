@@ -107,7 +107,7 @@ void initialize_rooms(struct room* rooms[])
 	int i, random;
 	int option[] = { 0,1,2,3,4,5,6,7,8,9 };
 
-	const char* RoomNames[] = { "alpha", "beta", "gamma", "delta", 
+	char* RoomNames[] = { "alpha", "beta", "gamma", "delta", 
 		"epsilon", "zeta", "eta", "theta", "iota", "kappa" };
 
 	srand((time(NULL)));
@@ -122,9 +122,7 @@ void initialize_rooms(struct room* rooms[])
 
 		rooms[i]->id = i;
 		rooms[i]->numberOfOutboundConnections = 0;
-		rooms[i]->name = calloc(16, sizeof(char));
-		rooms[i]->roomType = calloc(16, sizeof(char));
-		strcpy(rooms[i]->name, RoomNames[random]);
+		rooms[i]->name = RoomNames[random];
 	}
 }
 
@@ -190,7 +188,7 @@ void create_room_directory(struct room* rooms[])
 	{
 		memset(filePath, '\0', 20);
 		sprintf(filePath, "./%s/%s_room", DirectoryName, rooms[i]->name);		
-		printf("%s\n", filePath);
+		// printf("%s\n", filePath);
 
 		FILE* fp = fopen(filePath, "w");
 		if (fp == NULL)
