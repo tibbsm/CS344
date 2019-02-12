@@ -12,6 +12,8 @@
 //#include <fcntl.h>
 #include <dirent.h>
 #include <fcntl.h>
+#include <pthread.h> 
+
 
 struct room
 {	
@@ -99,7 +101,7 @@ void load_rooms(char name[], struct room* rooms[]){
 		int num = 0;
 		while ((ent = readdir(dir)) != NULL) {
 			if ( strcmp(ent->d_name, ".") != 0 && strcmp(ent->d_name, "..") != 0) {
-				//printf("%s\n", ent->d_name);
+				// printf("%s\n", ent->d_name);
 				
 				char i[100];
 				memset(&i, '\0', sizeof(i));
@@ -152,6 +154,16 @@ void load_rooms(char name[], struct room* rooms[]){
 	}
 }
 
+struct room * get_start_room(struct room* rooms[]) {
+	int i;
+	for ( i = 0; i < 7; i++) {
+		if (strcmp(rooms[i]->roomType, "START_ROOM") == 0) {
+			return rooms[i];		
+		}
+	}
+	return NULL;
+}
+
 void print_rooms(struct room* rooms[])
 {
 	int i, j, k;
@@ -165,6 +177,37 @@ void print_rooms(struct room* rooms[])
 		printf("ROOM TYPE: %s\n\n", rooms[i]->roomType);
 	}
 }
+
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+void *get_time(void *vargp) 
+{ 
+	pthread_mutex_lock(&mutex);
+
+	char outstr[200];
+    time_t t;
+    struct tm *tmp;
+
+	t = time(NULL);
+    tmp = localtime(&t);
+    if (tmp == NULL) {
+        perror("localtime");
+        exit(EXIT_FAILURE);
+    }
+
+   if (strftime(outstr, sizeof(outstr), "%l:%M%p, %A, %B %e, %Y", tmp) == 0) {
+        fprintf(stderr, "strftime returned 0");
+    }
+
+	// printf("Result string is %s\n", outstr);
+	FILE* file = fopen("currentTime.txt",  "w");
+	fprintf(file, "%s", outstr);
+	pthread_mutex_unlock(&mutex);
+	fclose(file);
+    return 0; 
+}
+
+
 
 int main() 
 {
@@ -183,6 +226,13 @@ int main()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+	pthread_t thread; 
+
+	pthread_mutex_lock(&mutex);
+	pthread_create(&thread, NULL, get_time, NULL);
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	printf("\n--Get most recent directory--\n");
 	get_most_recent_rooms(name);	
 	printf("Room name: %s\n", name);
@@ -194,59 +244,84 @@ int main()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	printf("\n--Start maze--\n");
-	
+	printf("\n--Get Start Room--\n");
+	struct room* currentRoom = get_start_room(rooms);
+
+	printf("\n--Start Maze--\n");
 	char input[20];
+	int route[100] = {[0 ... 99] = -1};
 	int i, j, k;
-	for ( i = 0; i < 7; i++) {
-		if (strcmp(rooms[i]->roomType, "START_ROOM") == 0) {
-			printf("CURRENT LOCATION: %s\n", rooms[i]->name);
-			j = rooms[i]->numberOfOutboundConnections;
-			printf("POSSIBLE CONNECTIONS: ");
-			for ( k = 0; k < j; k++) {
-				if (k+1 != j) {
-					printf("%s, ", rooms[i]->outboundConnections[k]);
-				} else {
-					printf("%s.\n", rooms[i]->outboundConnections[k]);
-				}
+	int steps = 0;
+// TODO: Loop here
+	while (strcmp(currentRoom->roomType, "END_ROOM") != 0) {
+		printf("CURRENT LOCATION: %s\n", currentRoom->name);
+		j = currentRoom->numberOfOutboundConnections;
+		printf("POSSIBLE CONNECTIONS: ");
+		for ( k = 0; k < j; k++) {
+			if (k+1 != j) {
+				printf("%s, ", currentRoom->outboundConnections[k]);
+			} else {
+				printf("%s.", currentRoom->outboundConnections[k]);
+			}
+		}
 
+		int flag = 0;
+		while(flag == 0) {
+			printf("\nWHERE TO? >");
+			fgets(input,20,stdin);
+			printf("\n");
+			size_t ln = strlen(input)-1;
+			if (input[ln] == '\n')
+		    	input[ln] = '\0';
+		    
+		    for ( k = 0; k < j; k++) {
+				if (strcmp(currentRoom->outboundConnections[k], input) == 0) {
+					flag = 1;
+				} 
+			}
+
+			if (strcmp(input, "time") == 0) {
+				pthread_mutex_unlock(&mutex);
+				pthread_join(thread, NULL);  
+				pthread_mutex_lock(&mutex);
+				pthread_create(&thread, NULL, get_time, NULL);
+
+				char s;
+				FILE* f=fopen("currentTime.txt","r");
+				while((s=fgetc(f))!=EOF) {
+					printf("%c",s);
+				}
+				fclose(f);
+				printf("\n");
+			} else if(flag == 0) {
+				printf("HUH? I DON’T UNDERSTAND THAT ROOM. TRY AGAIN.\n");
+			}
+		}
+
+		for ( i = 0; i < 7; i++) {
+			if (strcmp(rooms[i]->name, input) == 0) {
+				currentRoom = rooms[i];	
+				route[steps] = i;
+				steps++;	
 			}
 		}
 	}
-	printf("WHERE TO? >");
-	fgets(input,20,stdin);
-	// printf("%s\n", input);
 
-	for ( i = 0; i < 7; i++) {
-		printf("%s == %s (%d)\n", input, input, strcmp(input, input));
-		if (strcmp(rooms[i]->name, input) == 0) {
-			printf("CURRENT LOCATION: %s\n", rooms[i]->name);
-			j = rooms[i]->numberOfOutboundConnections;
-			printf("POSSIBLE CONNECTIONS: ");
-			for ( k = 0; k < j; k++) {
-				if (k+1 != j) {
-					printf("%s, ", rooms[i]->outboundConnections[k]);
-				} else {
-					printf("%s.\n", rooms[i]->outboundConnections[k]);
-				}
 
-			}
-		}
+	printf("YOU HAVE FOUND THE END ROOM. CONGRATULATIONS!\n");
+	printf("YOU TOOK %d STEPS. YOUR PATH TO VICTORY WAS:\n", steps);
+	for ( i = 0; i < 100; i++){
+		// printf("%d\n", route[i]);
+		if (route[i] == -1)
+			break;
+		else
+			printf("%s\n", rooms[route[i]]->name);
+
 	}
-	printf("WHERE TO? >");
-	fgets(input,20,stdin);
-	printf("%s\n", input);
 
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	printf("\n\n--Game Interface--\n");	
-	printf("CURRENT LOCATION: %s\n", "XYZZY");
-	printf("POSSIBLE CONNECTIONS: %s, %s, %s.\n", "PLOVER", "Dungeon", "twisty");
-	printf("WHERE TO? >\n\n");
-
-	print_rooms(rooms);
 
 	return 0;
 }
