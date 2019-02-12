@@ -321,8 +321,9 @@ int main()
 
 	}
 
-
-
+	pthread_mutex_unlock(&mutex);
+	pthread_join(thread, NULL);  
+	pthread_mutex_lock(&mutex);
 	free_memory(rooms);
 
 
