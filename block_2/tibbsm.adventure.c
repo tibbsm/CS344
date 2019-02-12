@@ -36,17 +36,6 @@ struct room
 * RETURNS: Nothing					 *
 *							 *
 *********************************************************/
-int is_graph_full(struct room* rooms[])
-{
-	int i;
-
-	for (int i = 0; i < 7; i++)
-	{
-		if (rooms[i]->numberOfOutboundConnections < 3)
-			return 0;
-	}
-	return 1;
-}
 
 void get_most_recent_rooms(char iname[]) 
 {
@@ -207,6 +196,19 @@ void *get_time(void *vargp)
     return 0; 
 }
 
+void free_memory(struct room* rooms[]) {
+	int i, j, k;
+	for ( i = 0; i < 7; i++)
+	{
+		j = rooms[i]->numberOfOutboundConnections;
+
+		free(rooms[i]->name);
+		free(rooms[i]->roomType);
+		for ( k = 0; k < j; k++)
+			free(rooms[i]->outboundConnections[k]);
+		
+	}
+}
 
 
 int main() 
@@ -319,6 +321,9 @@ int main()
 
 	}
 
+
+
+	free_memory(rooms);
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
