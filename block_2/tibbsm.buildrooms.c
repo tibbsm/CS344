@@ -158,8 +158,6 @@ void add_random_connection(struct room* rooms[])
 	int random_one, random_two;
 	int flag = 1;
 
-	srand((time(NULL)));
-	
 	while(flag == 1)
 	{
 		random_one = rand() % 7;
@@ -205,9 +203,6 @@ void initialize_rooms(struct room* rooms[])
 	char* RoomNames[] = { "alpha", "beta", "gamma", "delta", 
 		"epsilon", "zeta", "eta", "theta", "iota", "kappa" };
 
-	// Seed random number generator
-	srand((time(NULL)));
-
 	// For each room, generate a unique random number and
 	// intialize that room with a random name 
 	for ( index = 0; index < 7; index++)
@@ -245,7 +240,6 @@ void give_rooms_types(struct room* rooms[])
 	int index, randomOne, randomTwo;
 
 	// Generate random number 
-	srand(getpid());
 	randomOne = rand() % 7;
 
 	// Set the room types to mid rooms
@@ -335,6 +329,7 @@ void create_room_directory(struct room* rooms[])
 
 int main() 
 {
+	srand(getpid());
 	// Initilaize room structs
 	struct room RoomOne, RoomTwo, RoomThree, RoomFour, RoomFive,
 		RoomSix, RoomSeven;
