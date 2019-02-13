@@ -194,15 +194,20 @@ void add_random_connection(struct room* rooms[])
 ********************************************************/
 void initialize_rooms(struct room* rooms[])
 {
-	int i, random;
+	// Initialize variables
+	int index, random;
 	int option[] = { 0,1,2,3,4,5,6,7,8,9 };
 
+	// 10 potential room names to pick from
 	char* RoomNames[] = { "alpha", "beta", "gamma", "delta", 
 		"epsilon", "zeta", "eta", "theta", "iota", "kappa" };
 
+	// Seed random number generator
 	srand((time(NULL)));
 
-	for ( i = 0; i < 7; i++)
+	// For each room, generate a unique random number and
+	// intialize that room with a random name 
+	for ( index = 0; index < 7; index++)
 	{
 		do
 		{
@@ -212,69 +217,102 @@ void initialize_rooms(struct room* rooms[])
 
 		option[random] = -1;	
 
-		rooms[i]->id = i;
-		rooms[i]->numberOfOutboundConnections = 0;
-		rooms[i]->name = RoomNames[random];
+		rooms[index]->id = index;
+		rooms[index]->numberOfOutboundConnections = 0;
+		rooms[index]->name = RoomNames[random];
 	}
 }
 
+/********************************************************
+*							 							*
+* FUNCTION NAME: give_rooms_types()						*
+*  										 				*
+* DESCRIPTION: Randomly assigns types to rooms 			*
+*							 							*
+* ARGUMENTS: 											*
+*	(1) rooms: an array of pointers to a room structs	*
+*							 							*
+* RETURNS: Nothing										*
+*							 							*
+********************************************************/
 void give_rooms_types(struct room* rooms[])
 {
-	int i, random;
+	// Initialize variables
+	int index, random;
 	int option[7] = { 0 };
 
-	srand(getpid());
+	// Generate random number 
+	srand((time(NULL)));
+	random = rand() % 7;
 
-	random = (rand());
-
-	printf("%d\n", random);
-
-	random = (random % 7);
-	printf("%d\n", random);
-
+	// Set random room to start room
 	rooms[random]->roomType = "START_ROOM";
 	option[random] = -1;
 
+	// Get new, unique random number
 	do
 	{
 		random = rand() % 7;
 	} while(option[random] == -1);
 
+	// Set random room to end room
 	rooms[random]->roomType = "END_ROOM";
 	option[random] = -1;
 
 
-	for (i = 0; i < 7; i++)
+	// Set rest of the rooms to mid rooms
+	for (index = 0; index < 7; index++)
 	{
-		if (option[i] == 0)
-			rooms[i]->roomType = "MID_ROOM";
+		if (option[index] == 0)
+			rooms[index]->roomType = "MID_ROOM";
 	}
 
 	return;
 }
 
+/********************************************************
+*							 							*
+* FUNCTION NAME: create_room_directory()				*
+*  										 				*
+* DESCRIPTION: Creates directory to store room files	*
+*							 							*
+* ARGUMENTS: 											*
+*	(1) rooms: an array of pointers to a room structs	*
+*							 							*
+* RETURNS: Nothing										*
+*							 							*
+********************************************************/
 void create_room_directory(struct room* rooms[])
 {
-	int Pid = getpid();
+	// Initialize proces id variable
+	int pid = getpid();
 	
-	char DirectoryName[20];
-	memset(DirectoryName, '\0', 20);
-	char* Prefix = "tibbsm.rooms.";
-	sprintf(DirectoryName, "%s%d", Prefix, Pid);
+	// Set directoryName variable to tibbsm.rooms.<pid>
+	char directoryName[20];
+	memset(directoryName, '\0', 20);
+	char* prefix = "tibbsm.rooms.";
+	sprintf(directoryName, "%s%d", prefix, pid);
 
-	mkdir(DirectoryName, 0755);
+	// Create directory
+	mkdir(directoryName, 0755);
 
+	// Variable to hold room filepaths
 	char filePath[100];
 
 	int i, j, k;
 	for ( i = 0; i < 7; i++)
 	{
+		// Initialize filePath
 		memset(filePath, '\0', 20);
-		sprintf(filePath, "./%s/%s_room", DirectoryName, rooms[i]->name);		
-		// printf("%s\n", filePath);
 
-		FILE* fp = fopen(filePath, "w");
-		if (fp == NULL)
+		// Set filePath to ./tibbsm.rooms.<pid>/<room name>_room
+		sprintf(filePath, "./%s/%s_room", directoryName, rooms[i]->name);		
+
+		// Initialize file stream using filePath
+		FILE* file = fopen(filePath, "w");
+
+		// If error opening file stream
+		if (file == NULL)
 		{
 			fprintf(stderr, "Could not open %s\n", filePath);
 			perror("Error in create_room_directory()");
@@ -282,12 +320,15 @@ void create_room_directory(struct room* rooms[])
 		}
 
 		j = rooms[i]->numberOfOutboundConnections;
-		fprintf(fp, "ROOM NAME: %s\n", rooms[i]->name);
-		for ( k = 0; k < j; k++)
-			fprintf(fp, "CONNECTION %d: %s\n", k + 1, rooms[i]->outboundConnections[k]->name);
-		fprintf(fp, "ROOM TYPE: %s\n", rooms[i]->roomType);
 
-		fclose(fp);
+		// Print room name, connections, and room type to file
+		fprintf(file, "ROOM NAME: %s\n", rooms[i]->name);
+		for ( k = 0; k < j; k++)
+			fprintf(file, "CONNECTION %d: %s\n", k + 1, rooms[i]->outboundConnections[k]->name);
+		fprintf(file, "ROOM TYPE: %s\n", rooms[i]->roomType);
+
+		// Close file
+		fclose(file);
 	}
 	return;
 }
