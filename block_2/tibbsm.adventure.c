@@ -1,11 +1,11 @@
 /********************************************************
-*														*
-* FILENAME:		tibbsm.adventure.c						*
-* AUTHOR: 		Marc Tibbs 								*
-* EMAIL:		tibbsm@oregonstate.edu					*
-* CLASS: 		CS344 (Winter 2019)						*
-* ASSIGNMENT:	Program 2								*
-*							 							*
+*							*
+* FILENAME:		tibbsm.adventure.c		*
+* AUTHOR: 		Marc Tibbs 			*
+* EMAIL:		tibbsm@oregonstate.edu		*
+* CLASS: 		CS344 (Winter 2019)		*
+* ASSIGNMENT:		Program 2			*
+*							*
 ********************************************************/
 
 #include <stdio.h>
@@ -21,13 +21,13 @@
 pthread_mutex_t MUTEX = PTHREAD_MUTEX_INITIALIZER;
 
 /********************************************************
-*							 							*
-* STRUCTURE NAME: room	 							 	*
-*  							 							*
+*							*
+* STRUCTURE NAME: room	 			 	*
+*  							*
 * DESCRIPTION: Holds the room data, including its name, *
-*	room type, number of connections & an array of room *
-*   names that it is connected to.						*
-*														*
+*	room type, number of connections & an array of  *
+*	room names that it is connected to.		*
+*							*
 ********************************************************/
 struct room
 {	
@@ -38,18 +38,18 @@ struct room
 };
 
 /********************************************************
-*														*
-* FUNCTION NAME: get_most_recent_rooms()		 		*
-*  							 							*
+*							*
+* FUNCTION NAME: get_most_recent_rooms()		*
+*  							*
 * DESCRIPTION: Set the passed in char pointer to the 	*
 *  name most recently touched directory in the current  *
-*  directory.									 	 	*
-*							 							*
+*  directory.					 	*
+*							*
 * ARGUMENTS: (1) dirName: A pointer to the char array to*
 *  hold the name of the most recently touched directory *
-*							         					*
-* RETURNS: Nothing										*
-*							 							*
+*							*
+* RETURNS: Nothing					*
+*							*
 ********************************************************/
 void get_most_recent_rooms(char* dirName) 
 {
@@ -117,20 +117,20 @@ void get_most_recent_rooms(char* dirName)
 
 
 /********************************************************
-*														*
-* FUNCTION NAME: load_rooms()		 					*
-*  							 							*
+*							*
+* FUNCTION NAME: load_rooms()		 		*
+*  							*
 * DESCRIPTION: Set the passed in char pointer to the 	*
 *  name most recently touched directory in the current  *
-*  directory.									 	 	*
-*							 							*
-* ARGUMENTS: 											*
-* 	(1) dirName: A char array holding the name of the   *
-* 			room directory to access. 					*
-* 	(2) rooms: An array of pointers to rooms structs    *
-*							         					*
-* RETURNS: Nothing										*
-*							 							*
+*  directory.				 	 	*
+*							*
+* ARGUMENTS: 						*
+* 	(1) dirName: A char array holding the name of   *
+* 		the room directory to access. 		*
+* 	(2) rooms: An array of pointers to rooms structs*
+*							*
+* RETURNS: Nothing					*
+*							*
 ********************************************************/
 void load_rooms(char dirName[], struct room* rooms[]){
 
@@ -233,18 +233,18 @@ void load_rooms(char dirName[], struct room* rooms[]){
 }
 
 /********************************************************
-*														*
-* FUNCTION NAME: get_start_room()		 				*
-*  							 							*
+*							*
+* FUNCTION NAME: get_start_room()			*
+*  							*
 * DESCRIPTION: Get return the pointer to the maze's 	*
-*  startroom.											*
-*							 							*
-* ARGUMENTS: 											*
-* 	(1) rooms: An array of pointers to rooms structs    *
-*							         					*
+*  startroom.						*
+*							*
+* ARGUMENTS: 						*
+* 	(1) rooms: An array of pointers to rooms structs*
+*							*
 * RETURNS: A pointer to the start room. Null if not 	*
-* 	found.												*
-*							 							*
+* 	found.						*
+*							*
 ********************************************************/
 struct room* get_start_room(struct room* rooms[]) 
 {
@@ -262,15 +262,15 @@ struct room* get_start_room(struct room* rooms[])
 }
 
 /********************************************************
-*														*
-* FUNCTION NAME: get_time()		 						*
-*  							 							*
+*							*
+* FUNCTION NAME: get_time()		 		*
+*  							*
 * DESCRIPTION: Writes the current date/time to file.    *
-*							 							*
-* ARGUMENTS: None 										*
-*							         					*
-* RETURNS: Nothing.										*
-*							 							*
+*							*
+* ARGUMENTS: None 					*
+*							*
+* RETURNS: Nothing.					*
+*							*
 ********************************************************/
 void* get_time() 
 { 
@@ -312,16 +312,16 @@ void* get_time()
 
 
 /********************************************************
-*														*
-* FUNCTION NAME: free_memory()		 					*
-*  							 							*
+*							*
+* FUNCTION NAME: free_memory()		 		*
+*  							*
 * DESCRIPTION: Frees memory allocated to room structs   *
-*							 							*
-* ARGUMENTS: 											*
-*	(1) rooms: Array of pointers to room structs		*
-*							         					*
-* RETURNS: Nothing.										*
-*							 							*
+*							*
+* ARGUMENTS: 						*
+*	(1) rooms: Array of pointers to room structs	*
+*							*
+* RETURNS: Nothing.					*
+*							*
 ********************************************************/
 void free_memory(struct room* rooms[], pthread_t timeThread) 
 {
@@ -346,16 +346,16 @@ void free_memory(struct room* rooms[], pthread_t timeThread)
 }
 
 /********************************************************
-*														*
-* FUNCTION NAME:  print_current_room()		 			*
-*  							 							*
+*							*
+* FUNCTION NAME:  print_current_room()		 	*
+*  							*
 * DESCRIPTION: Prints the room's name and connections   *
-*							 							*
-* ARGUMENTS: 											*
-*	(1) currentRoom: Pointers to room struct 			*
-*							         					*
-* RETURNS: Nothing.										*
-*							 							*
+*							*
+* ARGUMENTS: 						*
+*	(1) currentRoom: Pointers to room struct 	*
+*							*
+* RETURNS: Nothing.					*
+*							*
 ********************************************************/
 void print_current_room(struct room* currentRoom)
 {
@@ -381,18 +381,18 @@ void print_current_room(struct room* currentRoom)
 }
 
 /********************************************************
-*														*
-* FUNCTION NAME:  get_user_input()			 			*
-*  							 							*
-* DESCRIPTION: Gets and validates user input   			*
-*							 							*
-* ARGUMENTS: 											*
-*	(1) currentRoom: Pointers to room struct 			*
-*	(2) timeThread: Thread to run get_time() 			*
-*	(3) input: Char pointer with user input 			*
-*							 							*
-* RETURNS: Nothing.										*
-*							 							*
+*							*
+* FUNCTION NAME:  get_user_input()			*
+*  							*
+* DESCRIPTION: Gets and validates user input   		*
+*							*
+* ARGUMENTS: 						*
+*	(1) currentRoom: Pointers to room struct 	*
+*	(2) timeThread: Thread to run get_time() 	*
+*	(3) input: Char pointer with user input 	*
+*							*
+* RETURNS: Nothing.					*
+*							*
 ********************************************************/
 void get_user_input(struct room* currentRoom, pthread_t timeThread, 
 						char* input) 
@@ -467,20 +467,20 @@ void get_user_input(struct room* currentRoom, pthread_t timeThread,
 }
 
 /********************************************************
-*														*
-* FUNCTION NAME:  go_to_room()			 				*	
-*  							 							*
+*							*
+* FUNCTION NAME:  go_to_room()			 	*	
+*  							*
 * DESCRIPTION: Changes current room to user's choice	*
-*							 							*
-* ARGUMENTS: 											*
-*	(1) route: pointer to route array 					*
-*	(2) steps: pointer to step count variable 			*
-*	(3) input: pointer to user's input	 				*
-*	(4) rooms: pointer to rooms array					*
-*	(5) room: pointer to pointer to currentRoom			*
-*							 							*
-* RETURNS: Nothing.										*
-*							 							*
+*							*
+* ARGUMENTS: 						*
+*	(1) route: pointer to route array 		*
+*	(2) steps: pointer to step count variable 	*
+*	(3) input: pointer to user's input	 	*
+*	(4) rooms: pointer to rooms array		*
+*	(5) room: pointer to pointer to currentRoom	*
+*							*
+* RETURNS: Nothing.					*
+*							*
 ********************************************************/
 void go_to_room(int* route, int* steps, char* input, 
 					struct room* rooms[], struct room** currentRoom)
@@ -497,19 +497,19 @@ void go_to_room(int* route, int* steps, char* input,
 }
 
 /********************************************************
-*														*
-* FUNCTION NAME: print_end_game()			 			*	
-*  							 							*
+*							*
+* FUNCTION NAME: print_end_game()			*	
+*  							*
 * DESCRIPTION: Prints end of game message, the user's 	* 
-*	step count, and the user's route					*
-*							 							*
-* ARGUMENTS: 											*
-*	(1) route: route array 								*
-*	(2) steps: step count variable 						*
-*	(4) rooms: pointer to rooms array					*
-*							 							*
-* RETURNS: Nothing.										*
-*							 							*
+*	step count, and the user's route		*
+*							*
+* ARGUMENTS: 						*
+*	(1) route: route array 				*
+*	(2) steps: step count variable 			*
+*	(4) rooms: pointer to rooms array		*
+*							*
+* RETURNS: Nothing.					*
+*							*
 ********************************************************/
 void print_end_game(int route[], int steps, struct room* rooms[])
 {
@@ -534,11 +534,6 @@ void print_end_game(int route[], int steps, struct room* rooms[])
 
 int main() 
 {
-
-	/********************************************************
-	*	Variables 											*
-	********************************************************/
-
 	// Initilaize room structs
 	struct room RoomOne, RoomTwo, RoomThree, RoomFour, RoomFive,
 		RoomSix, RoomSeven;
@@ -556,18 +551,12 @@ int main()
 	// Int to hold the number of steps the user makes in the game
 	int steps = 0;
 
-	/********************************************************
-	*	Threads	 											*
-	********************************************************/
-
 	// Thread to run the get_time function
 	pthread_t timeThread;
 
 	// Lock mutex and create the timeThread to run get_time()
 	pthread_mutex_lock(&MUTEX);
 	pthread_create(&timeThread, NULL, get_time, NULL);
-
-	
 
 	// Set roomDir to the most recently touched room directory
 	get_most_recent_rooms(roomDir);	

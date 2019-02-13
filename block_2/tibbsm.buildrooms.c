@@ -1,11 +1,11 @@
 /********************************************************
-*														*
-* FILENAME:		tibbsm.buildrooms.c						*
-* AUTHOR: 		Marc Tibbs 								*
-* EMAIL:		tibbsm@oregonstate.edu					*
-* CLASS: 		CS344 (Winter 2019)						*
-* ASSIGNMENT:	Program 2								*
-*							 							*
+*							*
+* FILENAME:		tibbsm.buildrooms.c		*
+* AUTHOR: 		Marc Tibbs 			*
+* EMAIL:		tibbsm@oregonstate.edu		*
+* CLASS: 		CS344 (Winter 2019)		*
+* ASSIGNMENT:		Program 2			*
+*							*
 ********************************************************/
 
 #include <stdio.h>
@@ -17,13 +17,14 @@
 #include <fcntl.h>
 
 /********************************************************
-*							 							*
-* STRUCTURE NAME: room	 							 	*
-*  							 							*
+*							*
+* STRUCTURE NAME: room	 			 	*
+*  							*
 * DESCRIPTION: Holds the room data, including its name, *
-*	room type, number of connections & an array of room *
-*   names that it is connected to.						*
-*														*
+*	room type, number of connections & an array of  *
+*	room 						*
+*   names that it is connected to.			*
+*							*
 ********************************************************/
 struct room
 {	
@@ -36,17 +37,17 @@ struct room
 
 
 /********************************************************
-*							 							*
-* FUNCTION NAME: is_graph_full()				 		*
-*  										 				*
+*							*
+* FUNCTION NAME: is_graph_full()			*
+*  							*
 * DESCRIPTION: Checks if rooms have the minimum number 	*
-*	of connections 								 	 	*
-*							 							*
-* ARGUMENTS: 			*
-*	(1) rooms: route array 								*
-*							 							*
-* RETURNS: If true, returns 1. Else, returns 0			*
-*							 							*
+*	of connections 				 	*
+*							*
+* ARGUMENTS: 						*
+*	(1) rooms: route array 				*
+*							*
+* RETURNS: If true, returns 1. Else, returns 0		*
+*							*
 ********************************************************/
 int is_graph_full(struct room* rooms[])
 {
@@ -63,17 +64,17 @@ int is_graph_full(struct room* rooms[])
 }
 
 /********************************************************
-*							 							*
-* FUNCTION NAME: can_add_connection_from()				*
-*  										 				*
+*							*
+* FUNCTION NAME: can_add_connection_from()		*
+*  							*
 * DESCRIPTION: Checks if another connection can be made *
-*	to a room.	 								 	 	*
-*							 							*
-* ARGUMENTS: 											*
-*	(1) room: a pointer to a room struct				*
-*							 							*
-* RETURNS: If true, returns 1. Else, returns 0			*
-*							 							*
+*	to a room.	 			 	*
+*							*
+* ARGUMENTS: 						*
+*	(1) room: a pointer to a room struct		*
+*							*
+* RETURNS: If true, returns 1. Else, returns 0		*
+*							*
 ********************************************************/
 int can_add_connection_from(struct room* room) 
 {
@@ -86,18 +87,18 @@ int can_add_connection_from(struct room* room)
 }
 
 /********************************************************
-*							 							*
-* FUNCTION NAME: connection_already_exists()			*
-*  										 				*
-* DESCRIPTION: Checks if a room connection already 		*
-* 	exists 												*
-*							 							*
-* ARGUMENTS: 											*
-*	(1) roomOne: a pointer to a room struct				*
-*	(2) roomTwo: a pointer to a room struct				*
-*							 							*
-* RETURNS: If true, returns 1. Else, returns 0			*
-*							 							*
+*							*
+* FUNCTION NAME: connection_already_exists()		*
+*  							*
+* DESCRIPTION: Checks if a room connection already 	*
+* 	exists 						*
+*							*
+* ARGUMENTS: 						*
+*	(1) roomOne: a pointer to a room struct		*
+*	(2) roomTwo: a pointer to a room struct		*
+*							*
+* RETURNS: If true, returns 1. Else, returns 0		*
+*							*
 ********************************************************/
 int connection_already_exists(struct room* roomOne, struct room* roomTwo)
 {
@@ -112,17 +113,17 @@ int connection_already_exists(struct room* roomOne, struct room* roomTwo)
 }
 
 /********************************************************
-*							 							*
-* FUNCTION NAME: connect_rooms()						*
-*  										 				*
+*							*
+* FUNCTION NAME: connect_rooms()			*
+*  							*
 * DESCRIPTION: Makes a connection between two rooms 	*
-*							 							*
-* ARGUMENTS: 											*
-*	(1) roomOne: a pointer to a room struct				*
-*	(2) roomTwo: a pointer to a room struct				*
-*							 							*
-* RETURNS: Nothing										*
-*							 							*
+*							*
+* ARGUMENTS: 						*
+*	(1) roomOne: a pointer to a room struct		*
+*	(2) roomTwo: a pointer to a room struct		*
+*							*
+* RETURNS: Nothing					*
+*							*
 ********************************************************/
 void connect_rooms(struct room* roomOne, struct room* roomTwo)
 {
@@ -139,17 +140,18 @@ void connect_rooms(struct room* roomOne, struct room* roomTwo)
 
 
 /********************************************************
-*							 							*
-* FUNCTION NAME: add_random_connection()				*
-*  										 				*
+*							*
+* FUNCTION NAME: add_random_connection()		*
+*  							*
 * DESCRIPTION: Adds a connection between two random 	* 
-* 	rooms 												*
-*							 							*
-* ARGUMENTS: 											*
-*	(1) rooms: an array of pointers to a room structs	*
-*							 							*
-* RETURNS: Nothing										*
-*							 							*
+* 	rooms 						*
+*							*
+* ARGUMENTS: 						*
+*	(1) rooms: an array of pointers to a room	* 
+*		structs					*
+*							*
+* RETURNS: Nothing					*
+*							*
 ********************************************************/
 void add_random_connection(struct room* rooms[])
 {
@@ -181,16 +183,17 @@ void add_random_connection(struct room* rooms[])
 }
 
 /********************************************************
-*							 							*
-* FUNCTION NAME: initialize_rooms()						*
-*  										 				*
-* DESCRIPTION: Initializes room structs					*
-*							 							*
-* ARGUMENTS: 											*
-*	(1) rooms: an array of pointers to a room structs	*
-*							 							*
-* RETURNS: Nothing										*
-*							 							*
+*							*
+* FUNCTION NAME: initialize_rooms()			*
+*  							*
+* DESCRIPTION: Initializes room structs			*
+*							*
+* ARGUMENTS: 						*
+*	(1) rooms: an array of pointers to a room	*
+*		 structs				*
+*							*
+* RETURNS: Nothing					*
+*							*
 ********************************************************/
 void initialize_rooms(struct room* rooms[])
 {
@@ -224,63 +227,60 @@ void initialize_rooms(struct room* rooms[])
 }
 
 /********************************************************
-*							 							*
-* FUNCTION NAME: give_rooms_types()						*
-*  										 				*
-* DESCRIPTION: Randomly assigns types to rooms 			*
-*							 							*
-* ARGUMENTS: 											*
-*	(1) rooms: an array of pointers to a room structs	*
-*							 							*
-* RETURNS: Nothing										*
-*							 							*
+*							*
+* FUNCTION NAME: give_rooms_types()			*
+*  							*
+* DESCRIPTION: Randomly assigns types to rooms 		*
+*							*
+* ARGUMENTS: 						*
+*	(1) rooms: an array of pointers to a room	* 
+*		structs					*
+*							*
+* RETURNS: Nothing					*
+*							*
 ********************************************************/
 void give_rooms_types(struct room* rooms[])
 {
 	// Initialize variables
-	int index, random;
-	int option[7] = { 0 };
+	int index, randomOne, randomTwo;
 
 	// Generate random number 
-	srand((time(NULL)));
-	random = rand() % 7;
+	srand(getpid());
+	randomOne = rand() % 7;
+
+	// Set the room types to mid rooms
+	for (index = 0; index < 7; index++)
+	{
+		rooms[index]->roomType = "MID_ROOM";
+	}
 
 	// Set random room to start room
-	rooms[random]->roomType = "START_ROOM";
-	option[random] = -1;
+	rooms[randomOne]->roomType = "START_ROOM";
 
 	// Get new, unique random number
 	do
 	{
-		random = rand() % 7;
-	} while(option[random] == -1);
+		randomTwo = rand() % 7;
+	} while(randomOne == randomTwo);
 
 	// Set random room to end room
-	rooms[random]->roomType = "END_ROOM";
-	option[random] = -1;
-
-
-	// Set rest of the rooms to mid rooms
-	for (index = 0; index < 7; index++)
-	{
-		if (option[index] == 0)
-			rooms[index]->roomType = "MID_ROOM";
-	}
+	rooms[randomTwo]->roomType = "END_ROOM";
 
 	return;
 }
 
 /********************************************************
-*							 							*
-* FUNCTION NAME: create_room_directory()				*
-*  										 				*
+*							*
+* FUNCTION NAME: create_room_directory()		*
+*  							*
 * DESCRIPTION: Creates directory to store room files	*
-*							 							*
-* ARGUMENTS: 											*
-*	(1) rooms: an array of pointers to a room structs	*
-*							 							*
-* RETURNS: Nothing										*
-*							 							*
+*							*
+* ARGUMENTS: 						*
+*	(1) rooms: an array of pointers to a room	* 
+*		structs					*
+*							*
+* RETURNS: Nothing					*
+*							*
 ********************************************************/
 void create_room_directory(struct room* rooms[])
 {
