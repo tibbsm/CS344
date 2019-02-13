@@ -1,7 +1,12 @@
-/*
- *
- *
- */
+/********************************************************
+*														*
+* FILENAME:		tibbsm.buildrooms.c						*
+* AUTHOR: 		Marc Tibbs 								*
+* EMAIL:		tibbsm@oregonstate.edu					*
+* CLASS: 		CS344 (Winter 2019)						*
+* ASSIGNMENT:	Program 2								*
+*							 							*
+********************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,6 +16,15 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+/********************************************************
+*							 							*
+* STRUCTURE NAME: room	 							 	*
+*  							 							*
+* DESCRIPTION: Holds the room data, including its name, *
+*	room type, number of connections & an array of room *
+*   names that it is connected to.						*
+*														*
+********************************************************/
 struct room
 {	
 	int id;
@@ -21,18 +35,19 @@ struct room
 };
 
 
-/*********************************************************
-*							 *
-* FUNCTION NAME: create_room_directory()		 *
-*  							 *
-* DESCRIPTION: Creates the room directory		 * 
-*  "tibbsm.rooms.<PID>" in current directory	 	 *
-*							 *
-* ARGUMENTS: None					 *
-*							 *
-* RETURNS: Nothing					 *
-*							 *
-*********************************************************/
+/********************************************************
+*							 							*
+* FUNCTION NAME: is_graph_full()				 		*
+*  										 				*
+* DESCRIPTION: Checks if rooms have the minimum number 	*
+*	of connections 								 	 	*
+*							 							*
+* ARGUMENTS: 			*
+*	(1) rooms: route array 								*
+*							 							*
+* RETURNS: If true, returns 1. Else, returns 0			*
+*							 							*
+********************************************************/
 int is_graph_full(struct room* rooms[])
 {
 	int i;
@@ -40,42 +55,102 @@ int is_graph_full(struct room* rooms[])
 	for ( i = 0; i < 7; i++)
 	{
 		if (rooms[i]->numberOfOutboundConnections < 3)
+		{
 			return 0;
+		}
 	}
 	return 1;
 }
 
-int can_add_connection_from(struct room* Room) 
+/********************************************************
+*							 							*
+* FUNCTION NAME: can_add_connection_from()				*
+*  										 				*
+* DESCRIPTION: Checks if another connection can be made *
+*	to a room.	 								 	 	*
+*							 							*
+* ARGUMENTS: 											*
+*	(1) room: a pointer to a room struct				*
+*							 							*
+* RETURNS: If true, returns 1. Else, returns 0			*
+*							 							*
+********************************************************/
+int can_add_connection_from(struct room* room) 
 {
-	if (Room->numberOfOutboundConnections < 6)
+	if (room->numberOfOutboundConnections < 6)
+	{
 		return 1;
+	}
 
 	return 0;
 }
 
-int connection_already_exists(struct room* RoomOne, struct room* RoomTwo)
+/********************************************************
+*							 							*
+* FUNCTION NAME: connection_already_exists()			*
+*  										 				*
+* DESCRIPTION: Checks if a room connection already 		*
+* 	exists 												*
+*							 							*
+* ARGUMENTS: 											*
+*	(1) roomOne: a pointer to a room struct				*
+*	(2) roomTwo: a pointer to a room struct				*
+*							 							*
+* RETURNS: If true, returns 1. Else, returns 0			*
+*							 							*
+********************************************************/
+int connection_already_exists(struct room* roomOne, struct room* roomTwo)
 {
 	int i;
-	for ( i = 0; i < RoomOne->numberOfOutboundConnections; i++ )
+	for ( i = 0; i < roomOne->numberOfOutboundConnections; i++ )
 	{
-		if ( RoomOne->outboundConnections[i]->id == RoomTwo->id )
+		if ( roomOne->outboundConnections[i]->id == roomTwo->id )
 			return 1;
 	} 
 
 	return 0;	
 }
 
-void connect_rooms(struct room* RoomOne, struct room* RoomTwo)
+/********************************************************
+*							 							*
+* FUNCTION NAME: connect_rooms()						*
+*  										 				*
+* DESCRIPTION: Makes a connection between two rooms 	*
+*							 							*
+* ARGUMENTS: 											*
+*	(1) roomOne: a pointer to a room struct				*
+*	(2) roomTwo: a pointer to a room struct				*
+*							 							*
+* RETURNS: Nothing										*
+*							 							*
+********************************************************/
+void connect_rooms(struct room* roomOne, struct room* roomTwo)
 {
-	int i = RoomOne->numberOfOutboundConnections++;
-	RoomOne->outboundConnections[i] = RoomTwo;
+	// Add roomTwo to roomOne's connections
+	int i = roomOne->numberOfOutboundConnections++;
+	roomOne->outboundConnections[i] = roomTwo;
 
-	int j = RoomTwo->numberOfOutboundConnections++;
-	RoomTwo->outboundConnections[j] = RoomOne;
+	// Add roomOne to roomTwo's connections
+	int j = roomTwo->numberOfOutboundConnections++;
+	roomTwo->outboundConnections[j] = roomOne;
 
 	return;
 }
 
+
+/********************************************************
+*							 							*
+* FUNCTION NAME: add_random_connection()				*
+*  										 				*
+* DESCRIPTION: Adds a connection between two random 	* 
+* 	rooms 												*
+*							 							*
+* ARGUMENTS: 											*
+*	(1) rooms: an array of pointers to a room structs	*
+*							 							*
+* RETURNS: Nothing										*
+*							 							*
+********************************************************/
 void add_random_connection(struct room* rooms[])
 {
 	int random_one, random_two;
@@ -88,20 +163,35 @@ void add_random_connection(struct room* rooms[])
 		random_one = rand() % 7;
 
 		if (can_add_connection_from(rooms[random_one]) == 1)
+		{
 			flag = 0;		
+		}
 	}
 
 	do
 	{
 		random_two = rand() % 7;
-	} while (can_add_connection_from(rooms[random_two]) == 0 || 
+	} 
+	while (can_add_connection_from(rooms[random_two]) == 0 || 
 			random_one == random_two || 
 			connection_already_exists(rooms[random_one], 
-						  rooms[random_two]));
+				rooms[random_two]));
 
 	connect_rooms(rooms[random_one], rooms[random_two]);	
 }
 
+/********************************************************
+*							 							*
+* FUNCTION NAME: initialize_rooms()						*
+*  										 				*
+* DESCRIPTION: Initializes room structs					*
+*							 							*
+* ARGUMENTS: 											*
+*	(1) rooms: an array of pointers to a room structs	*
+*							 							*
+* RETURNS: Nothing										*
+*							 							*
+********************************************************/
 void initialize_rooms(struct room* rooms[])
 {
 	int i, random;
@@ -117,7 +207,9 @@ void initialize_rooms(struct room* rooms[])
 		do
 		{
 			random = rand() % 10;
-		} while(option[random] == -1);
+		} 
+		while(option[random] == -1);
+
 		option[random] = -1;	
 
 		rooms[i]->id = i;
@@ -131,9 +223,14 @@ void give_rooms_types(struct room* rooms[])
 	int i, random;
 	int option[7] = { 0 };
 
-	srand((time(NULL)));
+	srand(getpid());
 
-	random = rand() % 7;
+	random = (rand());
+
+	printf("%d\n", random);
+
+	random = (random % 7);
+	printf("%d\n", random);
 
 	rooms[random]->roomType = "START_ROOM";
 	option[random] = -1;
@@ -154,20 +251,6 @@ void give_rooms_types(struct room* rooms[])
 	}
 
 	return;
-}
-
-void print_rooms(struct room* rooms[])
-{
-	int i, j, k;
-	for ( i = 0; i < 7; i++)
-	{
-		j = rooms[i]->numberOfOutboundConnections;
-
-		printf("ROOM NAME: %s\n", rooms[i]->name);
-		for ( k = 0; k < j; k++)
-			printf("CONNECTION %d: %s\n", k + 1, rooms[i]->outboundConnections[k]->name);
-		printf("ROOM TYPE: %s\n\n", rooms[i]->roomType);
-	}
 }
 
 void create_room_directory(struct room* rooms[])
@@ -225,14 +308,13 @@ int main()
 	// Randomly assign rooms room types
 	give_rooms_types(rooms);
 
-	/*
-	 * Make connections
-	 */
+	// Make connections 
 	while (is_graph_full(rooms) == 0)
+	{
 		add_random_connection(rooms);
+	}
 
 	// Create the directory for rooms
 	create_room_directory(rooms);
-	// print_rooms(rooms);
 }
 
