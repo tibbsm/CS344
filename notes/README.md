@@ -18,3 +18,11 @@
 * [Lecture 2.5 - Strings in C](./block2/05.md)
 * [Lecture 2.6 - C Debugging](./block2/06.md)
 * [Lecture 2.7 - Mixing Languages](./block2/07.md)
+ 
+
+## Block 3
+* [Lecture 3.1 - Processes](./block3/01.md)
+* [Lecture 3.2 - Process Management & Zombies](./block3/02.md)
+* [Lecture 3.3 - Signals](./block3/03.md)
+* [Lecture 3.4 - More UNIX IO](./block3/04.md)
+
