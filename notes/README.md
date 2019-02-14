@@ -10,4 +10,11 @@
 * [Lecture 1.7 - The Vicious Interface](./block1/07.md)
 * [Lecture 1.8 - Regular Expressions](./block1/08.md)
 
-
+## Block 2
+* Lecture 2.1 - C Review
+* [Lecture 2.2 - From Programs to Execution](./block2/02.md)
+* [Lecture 2.3 - Concurrency](./block2/03.md)
+* [Lecture 2.4 - File Access in C](./block2/04.md)
+* [Lecture 2.5 - Strings in C](./block2/05.md)
+* [Lecture 2.6 - C Debugging](./block2/06.md)
+* [Lecture 2.7 - Mixing Languages](./block2/07.md)
